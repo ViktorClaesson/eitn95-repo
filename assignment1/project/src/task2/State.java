@@ -83,10 +83,10 @@ class State extends GlobalSimulation {
 	}
 
 	private void departNext() {
-		if (bInBuffer > 0)
-			insertEvent(DEPART_B, time + x_b);
-		else if (aInBuffer > 0)
+		if (aInBuffer > 0)
 			insertEvent(DEPART_A, time + x_a);
+		else if (bInBuffer > 0)
+			insertEvent(DEPART_B, time + x_b);
 	}
 
 	private void departA() {
