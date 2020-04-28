@@ -5,27 +5,36 @@ import java.io.*;
 public class MainSimulation extends GlobalSimulation {
 
 	public static void main(String[] args) throws IOException {
-		System.out.println(String.format("%16s|%16s|%16s", "Q1 arrival time", "Mean Q2 size", "Rejected chance"));
-
-		int measurements = 1000;
+		int[] M = {1000, 1000, 1000, 1000, 4000, 4000};
+		int[] N = {1000, 1000, 1000, 100, 100, 100};
+		int[] x = {100, 10, 200, 10, 10, 10};
+		int[] lambda = {8, 80, 4, 4, 4, 4};
+		int[] T = {1, 1, 1, 4, 1, 4};
 
 		Event actEvent;
-		State actState = new State(1); // The state that shoud be used
-		// Some events must be put in the event list at the beginning
-		eventList = new EventListClass();
-		insertEvent(ARRIVALQ1, 0);
-		insertEvent(MEASURE, actState.expRandom(5));
+		State actState;
+		for (int i = 0; i < T.length; i++) {
+				
+			actState = new State(N[i], x[i], lambda[i], T[i]); // The state that shoud be used
+			// Some events must be put in the event list at the beginning
+			eventList = new EventListClass();
+			insertEvent(ARRIVAL, 0);
+			insertEvent(MEASURE, 1);
 
-		// The main simulation loop
-		while (actState.noMeasurements < measurements) {
-			actEvent = eventList.fetchEvent();
-			time = actEvent.eventTime;
-			actState.treatEvent(actEvent);
+			File file = new File(String.format("results/task4/%d.txt", i));
+			FileWriter fw = new FileWriter(file);
+			StringBuffer sb = new StringBuffer();
+			// The main simulation loop
+			while (actState.noMeasurements < M[i]) {
+				actEvent = eventList.fetchEvent();
+				time = actEvent.eventTime;
+				actState.treatEvent(actEvent);
+				if (actEvent.eventType == MEASURE) {
+					sb.append(actState.currentNbr + "\n");
+				}
+			}
+			fw.write(sb.toString());
+			fw.close();
 		}
-
-		// Printing the result of the simulation, in this case a mean value
-		System.out.println(String.format("%16.2f|%16.2f|%15.2f%%"));
-	
-
 	}
 }
