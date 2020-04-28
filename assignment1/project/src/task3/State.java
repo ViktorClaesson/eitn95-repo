@@ -5,6 +5,7 @@ import java.util.*;
 class State extends GlobalSimulation {
 
 	public final double arrTime;
+	public LinkedList<Double> startQueue = new LinkedList<>();
 
 	public State(double arrTime) {
 		this.arrTime = arrTime;
@@ -12,7 +13,8 @@ class State extends GlobalSimulation {
 
 	// Here follows the state variables and other variables that might be needed
 	// e.g. for measurements
-	public int numberInQueue1 = 0, numberInQueue2, accumulated = 0, arrived = 0, rejected = 0, noMeasurements = 0;
+	public int numberInQueue1 = 0, numberInQueue2, accumulated = 0, arrived = 0, noMeasurements = 0;
+	public double totalTime;
 
 	Random slump = new Random(); // This is just a random number generator
 
@@ -37,7 +39,7 @@ class State extends GlobalSimulation {
 
 	public void printInfo(Event x) {
 		System.out.println(String.format("%10s %5.2f %4d %4d %4d %4d", eventTypeToString(x), x.eventTime,
-				numberInQueue1, numberInQueue2, arrived, rejected));
+				numberInQueue1, numberInQueue2, arrived));
 	}
 
 	// The following method is called by the main program each time a new event has
@@ -69,34 +71,33 @@ class State extends GlobalSimulation {
 
 	private void arrivalq1() {
 		arrived++;
-		if (numberInQueue1 < 10) { // ACCEPT
-			numberInQueue1++;
-			if (numberInQueue1 == 1)
-				insertEvent(DEPARTQ1, time + expRandom(2.1));
-		} else { // REJECT
-			rejected++;
-		}
-		insertEvent(ARRIVALQ1, time + arrTime);
+		numberInQueue1++;
+		if (numberInQueue1 == 1)
+			insertEvent(DEPARTQ1, time + expRandom(1));
+		insertEvent(ARRIVALQ1, time + expRandom(arrTime));
+		startQueue.add(time);
 	}
 
 	private void departq1() {
 		numberInQueue1--;
 		if (numberInQueue1 > 0)
-			insertEvent(DEPARTQ1, time + expRandom(2.1));
+			insertEvent(DEPARTQ1, time + expRandom(1));
 
 		numberInQueue2++;
 		if (numberInQueue2 == 1)
-			insertEvent(DEPARTQ2, time + 2);
+			insertEvent(DEPARTQ2, time + expRandom(1));
 	}
 
 	private void departq2() {
 		numberInQueue2--;
 		if (numberInQueue2 > 0)
-			insertEvent(DEPARTQ2, time + 2);
+			insertEvent(DEPARTQ2, time + expRandom(1));
+		totalTime += time - startQueue.poll();
 	}
 
 	private void measure() {
-		accumulated = accumulated + numberInQueue2;
+		accumulated = accumulated + numberInQueue2 + numberInQueue1;
+
 		noMeasurements++;
 		insertEvent(MEASURE, time + expRandom(5));
 	}
