@@ -20,7 +20,7 @@ public class MainSimulation extends GlobalSimulation {
 		}
 
 		// Printing the result of the simulation, in this case a mean value
-		System.out.println(1.0 * actState.accumulated / actState.noeMeasurements);
+		System.out.println(1.0 * actState.accumulated / actState.noMeasurements);
 
 		File file = new File(String.format("results/task2/%s.txt", System.currentTimeMillis()));
 		FileWriter fw = new FileWriter(file);
