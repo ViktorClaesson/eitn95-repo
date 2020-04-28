@@ -9,6 +9,19 @@ class State extends GlobalSimulation {
 	public int accumulated, noMeasurements;
 	public int aInBuffer, bInBuffer;
 
+	class DataPoint {
+		double time;
+		int aInBuffer, bInBuffer;
+
+		DataPoint(double time, int aInBuffer, int bInBuffer) {
+			this.time = time;
+			this.aInBuffer = aInBuffer;
+			this.bInBuffer = bInBuffer;
+		}
+	}
+
+	public ArrayList<DataPoint> data = new ArrayList<>();
+
 	private final double lambda = 150, x_a = 0.002, x_b = 0.004, d = 1, measure_time = 0.1;
 
 	Random slump = new Random(); // This is just a random number generator
@@ -91,7 +104,7 @@ class State extends GlobalSimulation {
 
 	private void departA() {
 		aInBuffer--;
-		insertEvent(ARRIVAL_B, time + expRandom(d));
+		insertEvent(ARRIVAL_B, time + d);
 		departNext();
 	}
 
@@ -104,6 +117,7 @@ class State extends GlobalSimulation {
 		// measure
 		accumulated += aInBuffer + bInBuffer;
 		noMeasurements += 1;
+		data.add(new DataPoint(time, aInBuffer, bInBuffer));
 		insertEvent(MEASURE, time + measure_time);
 	}
 }

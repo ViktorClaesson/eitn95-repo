@@ -1,6 +1,7 @@
 package task2;
 
 import java.io.*;
+import java.time.LocalDate;
 
 public class MainSimulation extends GlobalSimulation {
 
@@ -20,5 +21,12 @@ public class MainSimulation extends GlobalSimulation {
 
 		// Printing the result of the simulation, in this case a mean value
 		System.out.println(1.0 * actState.accumulated / actState.noMeasurements);
+
+		File file = new File(String.format("results/task2/%s.txt", System.currentTimeMillis()));
+		FileWriter fw = new FileWriter(file);
+		StringBuffer sb = new StringBuffer();
+		actState.data.forEach(dp -> sb.append(String.format("%f, %d, %d%n", dp.time, dp.aInBuffer, dp.bInBuffer)));
+		fw.write(sb.toString());
+		fw.close();
 	}
 }
