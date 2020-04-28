@@ -1,7 +1,6 @@
 package task2;
 
 import java.io.*;
-import java.time.LocalDate;
 
 public class MainSimulation extends GlobalSimulation {
 
