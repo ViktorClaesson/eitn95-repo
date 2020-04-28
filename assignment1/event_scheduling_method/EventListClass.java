@@ -1,4 +1,3 @@
-
 public class EventListClass {
 
 	private Event list, last; // Used to build a linked list

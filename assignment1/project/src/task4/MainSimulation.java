@@ -1,4 +1,5 @@
-import java.util.*;
+package task4;
+
 import java.io.*;
 
 public class MainSimulation extends GlobalSimulation {
