@@ -9,7 +9,9 @@ public class GlobalSimulation {
 	// in
 	// MainSimulation.java and State.java simpler (no dot notation is needed).
 
-	public static final int ARRIVAL = 1, READY = 2, MEASURE = 3; // The events, add or remove if needed!
+	public static final int ARRIVALQ1 = 1, DEPARTQ1 = 2, DEPARTQ2 = 3, MEASURE = 4; // The events, add or
+																					// remove if
+	// needed!
 	public static double time = 0; // The global time variable
 	public static EventListClass eventList = new EventListClass(); // The event list used in the program
 
