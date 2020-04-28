@@ -91,7 +91,7 @@ class State extends GlobalSimulation {
 
 	private void departA() {
 		aInBuffer--;
-		insertEvent(ARRIVAL_B, time + d);
+		insertEvent(ARRIVAL_B, time + expRandom(d));
 		departNext();
 	}
 
