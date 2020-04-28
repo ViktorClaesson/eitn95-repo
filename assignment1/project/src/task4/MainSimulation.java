@@ -1,7 +1,6 @@
 package task4;
 
 import java.io.*;
-import java.util.ArrayList;
 
 public class MainSimulation extends GlobalSimulation {
 
