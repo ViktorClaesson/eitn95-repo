@@ -33,61 +33,64 @@ public class MainSimulation extends Global {
         // MAKE THE QUEUES
         QS[] queueList = new QS[5];
 
-        // MAKE THE GENERATORS
-        List<Gen> generators = new ArrayList<Gen>();
+        List<Double> arrivalTimes = Arrays.asList(new Double[] { 0.11, 0.12, 0.15, 2.0 });
 
-        double meanA = 0.12;
-        Gen RandomGenerator = new Gen(meanA, queueList, ql -> ql[random.nextInt(ql.length)]);
-        Gen RoundRobinGenerator = new Gen(meanA, queueList, new Function<Proc[], Proc>() {
-            private int counter = 0;
+        System.out.println(String.format("%12s|%12s|%7s|%7s|%7s|%12s", "Arrival Mean", "Algorithm", "Mean L", "Mean W",
+                "Lambda", "Little's Law"));
 
-            @Override
-            public Proc apply(Proc[] ql) {
-                Proc temp = ql[counter];
-                counter = (counter + 1) % ql.length;
-                return temp;
+        for (double meanA : arrivalTimes) {
+            // MAKE THE GENERATORS
+            List<Gen> generators = new ArrayList<Gen>();
+
+            Gen RandomGenerator = new Gen("Random", meanA, queueList, ql -> ql[random.nextInt(ql.length)]);
+            Gen RoundRobinGenerator = new Gen("Round Robin", meanA, queueList, new Function<Proc[], Proc>() {
+                private int counter = 0;
+
+                @Override
+                public Proc apply(Proc[] ql) {
+                    Proc temp = ql[counter];
+                    counter = (counter + 1) % ql.length;
+                    return temp;
+                }
+            });
+            Gen LeastGenerator = new Gen("Least in Q", meanA, queueList, ql -> pickLeast((QS[]) ql));
+
+            generators.add(RandomGenerator);
+            generators.add(RoundRobinGenerator);
+            generators.add(LeastGenerator);
+
+            for (Gen gen : generators) {
+                resetGlobal();
+
+                // RESET THE QUEUES
+                resetQueues(queueList);
+
+                // MAKE THE SIGNAL LIST
+                new SignalList();
+
+                // START THE SIGNALS
+                SignalList.SendSignal(READY, gen, time);
+                for (QS q : queueList) {
+                    SignalList.SendSignal(MEASURE, q, time);
+                }
+
+                // SIMULATE
+                while (time < 100000) {
+                    actSignal = SignalList.FetchSignal();
+                    time = actSignal.arrivalTime;
+                    actSignal.destination.TreatSignal(actSignal);
+                }
+
+                // PRINT RESULTS
+                double meanL = Arrays.asList(queueList).stream()
+                        .mapToDouble(q -> 1.0 * q.accumulated / q.noMeasurements).sum();
+                double meanW = Arrays.asList(queueList).stream().mapToDouble(q -> 1.0 * q.serviceTime / q.arrived).sum()
+                        / queueList.length;
+                double lambda = Arrays.asList(queueList).stream().mapToDouble(q -> q.arrived).sum() / time;
+
+                System.out.println(String.format("%12.2f|%12s|%7.2f|%7.2f|%7.2f|%12.2f", meanA, gen.name, meanL, meanW,
+                        lambda, lambda * meanW / meanL));
             }
-        });
-        Gen LeastGenerator = new Gen(meanA, queueList, ql -> pickLeast((QS[]) ql));
-
-        generators.add(RandomGenerator);
-        generators.add(RoundRobinGenerator);
-        generators.add(LeastGenerator);
-
-        System.out.println(String.format("%7s|%7s|%7s|%7s|%7s|%7s|%7s", "Lambda", "Mean L", "Mean W", "L=la*W",
-                "W=L/la", "la=L/W", "1 ??"));
-        for (Gen gen : generators) {
-            resetGlobal();
-
-            // RESET THE QUEUES
-            resetQueues(queueList);
-
-            // MAKE THE SIGNAL LIST
-            new SignalList();
-
-            // START THE SIGNALS
-            SignalList.SendSignal(READY, gen, time);
-            for (QS q : queueList) {
-                SignalList.SendSignal(MEASURE, q, time);
-            }
-
-            // SIMULATE
-            while (time < 100000) {
-                actSignal = SignalList.FetchSignal();
-                time = actSignal.arrivalTime;
-                actSignal.destination.TreatSignal(actSignal);
-            }
-
-            // PRINT RESULTS
-            double meanL = Arrays.asList(queueList).stream().mapToDouble(q -> 1.0 * q.accumulated / q.noMeasurements)
-                    .sum();
-            double meanW = Arrays.asList(queueList).stream().mapToDouble(q -> 1.0 * q.serviceTime / q.arrived).sum()
-                    / queueList.length;
-            double lambda = Arrays.asList(queueList).stream().mapToDouble(q -> q.arrived).sum() / time;
-
-            System.out.println(String.format("%7.2f|%7.2f|%7.2f|%7.2f|%7.2f|%7.2f|%7.2f", lambda, meanL, meanW,
-                    lambda * meanW, meanL / lambda, meanL / meanW, lambda * meanW / meanL));
-
         }
     }
 }
