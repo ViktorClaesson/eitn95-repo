@@ -1,6 +1,14 @@
 package task5;
 
+import java.util.Random;
+
 public class Global {
-	public static final int ARRIVAL = 1, READY = 2, MEASURE = 3;
-	public static double time = 0;
+    public static final int ARRIVAL = 1, READY = 2, MEASURE = 3;
+    public static double time = 0;
+
+    public static final Random random = new Random();
+
+    public static double expRandom(double mean) {
+        return -mean * Math.log(1 - random.nextDouble());
+    }
 }
