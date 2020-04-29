@@ -16,6 +16,8 @@ public class MainSimulation extends GlobalSimulation {
 		double totalAverageServTime = 0;
 
 		for (int i = 0; i < 1000; i++) {
+			handling = 0;
+			time = 0;
 			averageServTime = 0;
 			startTime = new LinkedList<>();
 			actState = new State(minutesInDay); // The state that shoud be used
@@ -26,7 +28,6 @@ public class MainSimulation extends GlobalSimulation {
 			// The main simulation loop
 			while (actState.waiting > 0 || actState.currentTime < minutesInDay) {
 				actEvent = eventList.fetchEvent();
-				System.out.println(handling + " " + actState.waiting);
 				time = actEvent.eventTime;
 				actState.treatEvent(actEvent);
 				if (actEvent.eventType == ARRIVAL) {

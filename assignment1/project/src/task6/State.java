@@ -5,7 +5,7 @@ import java.util.*;
 class State extends GlobalSimulation {
 	public int minutesInDay;
 	public double currentTime = 0;
-	public int waiting = 1;
+	public int waiting = 0;
 	public int arrivals = 0;
 
 	public State(int minutesInDay) {
