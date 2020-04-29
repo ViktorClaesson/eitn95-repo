@@ -10,10 +10,21 @@ public class MainSimulation extends GlobalSimulation {
 		int[] x = {100, 10, 200, 10, 10, 10};
 		int[] lambda = {8, 80, 4, 4, 4, 4};
 		int[] T = {1, 1, 1, 4, 1, 4};
+		double average;
+		double[] datapoints;
+		double standardDeviation;
+		int longestCI;
+		int currentCI;
 
 		Event actEvent;
 		State actState;
+		System.out.println(String.format("%20s|%20s|%15s", "Mean", "Standard Deviation", "CI Length"));
 		for (int i = 0; i < T.length; i++) {
+			longestCI = 0;
+			currentCI = 0;
+			average = 0.0;
+			standardDeviation = 0.0;
+			datapoints = new double[M[i]];
 				
 			actState = new State(N[i], x[i], lambda[i], T[i]); // The state that shoud be used
 			// Some events must be put in the event list at the beginning
@@ -30,11 +41,30 @@ public class MainSimulation extends GlobalSimulation {
 				time = actEvent.eventTime;
 				actState.treatEvent(actEvent);
 				if (actEvent.eventType == MEASURE) {
+					average += actState.currentNbr;
 					sb.append(actState.currentNbr + "\n");
+					datapoints[actState.noMeasurements-1] = actState.currentNbr;
 				}
 			}
 			fw.write(sb.toString());
 			fw.close();
+			average  = average / M[i];
+			for (int j = 0; j < datapoints.length; j++) {
+				datapoints[j] = (Math.pow((datapoints[j]-(average)), 2));
+				standardDeviation += datapoints[j];
+			}
+			standardDeviation = 1.96 * (standardDeviation/M[i]);
+			for (int j = 0; j < datapoints.length; j++) {
+				if (average+standardDeviation >= datapoints[j] && average-standardDeviation <= datapoints[j] ){
+					if (currentCI == longestCI) {
+						longestCI++;
+					}
+					currentCI++;
+				} else {
+					currentCI = 0;
+				}
+			}
+			System.out.println(String.format("%20f|%20f|%15d", (average), Math.sqrt(standardDeviation/(average)), longestCI));
 		}
 	}
 }
