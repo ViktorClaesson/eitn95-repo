@@ -5,7 +5,6 @@ package task3;
 // to use a priority list which sorts events using eventTime.
 
 class Event {
-	public double createTime;
 	public double eventTime;
 	public int eventType;
 	public Event next;
