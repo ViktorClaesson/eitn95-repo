@@ -1,40 +1,43 @@
 package task6;
 
 import java.io.*;
+import java.util.LinkedList;
 
 public class MainSimulation extends GlobalSimulation {
 
 	public static void main(String[] args) throws IOException {
-		System.out.println(String.format("%16s|%16s|%16s", "Q1 arrival time", "Mean Q2 size", "Rejected chance"));
+		int minutesInDay = (17 * 60) - (9 * 60);
+		int overTime = 0;
+		System.out.println(String.format("%16s|%16s", "Average overtime", "Average Serv-time"));
+		Event actEvent;
+		State actState;
+		LinkedList<Double> startTime;
+		double averageServTime = 0;
+		double totalAverageServTime = 0;
 
-		double start = 0.5;
-		double end = 5.0;
-		double step = 0.5;
-
-		double amp = end - start;
-		int itr = (int) Math.ceil(amp / step);
-		for (int i = 0; i <= itr; i++) {
-			double arrTime = start + amp * i / itr;
-
-			Event actEvent;
-			State actState = new State(arrTime); // The state that shoud be used
+		for (int i = 0; i < 1000; i++) {
+			averageServTime = 0;
+			startTime = new LinkedList<>();
+			actState = new State(minutesInDay); // The state that shoud be used
 			// Some events must be put in the event list at the beginning
 			eventList = new EventListClass();
-			insertEvent(ARRIVALQ1, 0);
-			insertEvent(MEASURE, actState.expRandom(5));
+			insertEvent(ARRIVAL, actState.expRandom(15));
 
 			// The main simulation loop
-			while (actState.noMeasurements < 10000) {
+			while (actState.waiting > 0 || actState.currentTime < minutesInDay) {
 				actEvent = eventList.fetchEvent();
+				System.out.println(handling + " " + actState.waiting);
 				time = actEvent.eventTime;
 				actState.treatEvent(actEvent);
+				if (actEvent.eventType == ARRIVAL) {
+					startTime.add(actState.currentTime);
+				} else if (actEvent.eventType == DEPART){
+					averageServTime += actState.currentTime - startTime.poll();
+				}
 			}
-
-			// Printing the result of the simulation, in this case a mean value
-			System.out.println(String.format("%16.2f|%16.2f|%15.2f%%", arrTime,
-					1.0 * actState.accumulated / actState.noMeasurements,
-					100.0 * actState.rejected / actState.arrived));
+			totalAverageServTime += averageServTime/actState.arrivals;
+			overTime += (int)(((actState.time/60)*60) + actState.time%60) - minutesInDay;
 		}
-
+		System.out.println(String.format("%16d|%16d", overTime/1000, (int)totalAverageServTime/1000));
 	}
 }
