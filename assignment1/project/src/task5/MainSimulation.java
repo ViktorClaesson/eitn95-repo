@@ -1,9 +1,11 @@
 package task5;
 
-import java.io.*;
-import java.util.Queue;
+import java.io.IOException;
 import java.util.List;
 import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 //Denna klass �rver Global s� att man kan anv�nda time och signalnamnen utan punktnotation
 //It inherits Proc so that we can use time and the signal names without dot notation
@@ -12,62 +14,80 @@ public class MainSimulation extends Global {
 
     public static Proc pickLeast(QS[] input) {
         List<QS> candidates = Arrays.asList(input);
+        int min = candidates.stream().mapToInt(qs -> qs.numberInQueue).min().getAsInt();
+        List<QS> minList = candidates.stream().filter(a -> a.numberInQueue <= min).collect(Collectors.toList());
+        Proc temp = minList.get(random.nextInt(minList.size()));
+        return temp;
+    }
 
-        candidates.sort((a, b) -> b.noMeasurements - a.noMeasurements);
-        candidates.removeIf(a -> a.noMeasurements > candidates.get(0).noMeasurements);
-        return candidates.get(random.nextInt(candidates.size()));
+    public static void resetQueues(QS[] queueList) {
+        for (int i = 0; i < queueList.length; i++) {
+            queueList[i] = new QS(0.5, mean -> expRandom(mean));
+        }
     }
 
     public static void main(String[] args) throws IOException {
-
-        // Signallistan startas och actSignal deklareras. actSignal �r den senast
-        // utplockade signalen i huvudloopen nedan.
-        // The signal list is started and actSignal is declaree. actSignal is the latest
-        // signal that has been fetched from the
-        // signal list in the main loop below.
-
+        // SETUP
         Signal actSignal;
-        new SignalList();
 
-        // H�r nedan skapas de processinstanser som beh�vs och parametrar i dem ges
-        // v�rden.
-        // Here process instances are created (two queues and one generator) and their
-        // parameters are given values.
+        // MAKE THE QUEUES
+        QS[] queueList = new QS[5];
 
-        QS[] queueList = new QS[] { new QS(mean -> expRandom(mean), 0.5), new QS(mean -> expRandom(mean), 0.5),
-                new QS(mean -> expRandom(mean), 0.5), new QS(mean -> expRandom(mean), 0.5),
-                new QS(mean -> expRandom(mean), 0.5) };
+        // MAKE THE GENERATORS
+        List<Gen> generators = new ArrayList<Gen>();
 
-        int counter = 0;
-        Gen RandomGenerator = new Gen(9, queueList, ql -> ql[random.nextInt(ql.length)]);
-        Gen RoundRobinGenerator = new Gen(9, queueList, ql -> ql[counter++ % ql.length]);
-        Gen LeastGenerator = new Gen(9, queueList, ql -> pickLeast((QS[]) ql));
-        // Generator ska generera nio kunder per sekund //Generator shall generate 9
-        // customers per second
-        // De genererade kunderna ska skickas till k�systemet QS // The generated
-        // customers shall be sent to Q1
+        double meanA = 0.12;
+        Gen RandomGenerator = new Gen(meanA, queueList, ql -> ql[random.nextInt(ql.length)]);
+        Gen RoundRobinGenerator = new Gen(meanA, queueList, new Function<Proc[], Proc>() {
+            private int counter = 0;
 
-        // H�r nedan skickas de f�rsta signalerna f�r att simuleringen ska komma ig�ng.
-        // To start the simulation the first signals are put in the signal list
+            @Override
+            public Proc apply(Proc[] ql) {
+                Proc temp = ql[counter];
+                counter = (counter + 1) % ql.length;
+                return temp;
+            }
+        });
+        Gen LeastGenerator = new Gen(meanA, queueList, ql -> pickLeast((QS[]) ql));
 
-        SignalList.SendSignal(READY, RandomGenerator, time);
-        for (QS q : queueList) {
-            SignalList.SendSignal(MEASURE, q, time);
+        generators.add(RandomGenerator);
+        generators.add(RoundRobinGenerator);
+        generators.add(LeastGenerator);
+
+        System.out.println(String.format("%7s|%7s|%7s|%7s|%7s|%7s|%7s", "Lambda", "Mean L", "Mean W", "L=la*W",
+                "W=L/la", "la=L/W", "1 ??"));
+        for (Gen gen : generators) {
+            resetGlobal();
+
+            // RESET THE QUEUES
+            resetQueues(queueList);
+
+            // MAKE THE SIGNAL LIST
+            new SignalList();
+
+            // START THE SIGNALS
+            SignalList.SendSignal(READY, gen, time);
+            for (QS q : queueList) {
+                SignalList.SendSignal(MEASURE, q, time);
+            }
+
+            // SIMULATE
+            while (time < 100000) {
+                actSignal = SignalList.FetchSignal();
+                time = actSignal.arrivalTime;
+                actSignal.destination.TreatSignal(actSignal);
+            }
+
+            // PRINT RESULTS
+            double meanL = Arrays.asList(queueList).stream().mapToDouble(q -> 1.0 * q.accumulated / q.noMeasurements)
+                    .sum();
+            double meanW = Arrays.asList(queueList).stream().mapToDouble(q -> 1.0 * q.serviceTime / q.arrived).sum()
+                    / queueList.length;
+            double lambda = Arrays.asList(queueList).stream().mapToDouble(q -> q.arrived).sum() / time;
+
+            System.out.println(String.format("%7.2f|%7.2f|%7.2f|%7.2f|%7.2f|%7.2f|%7.2f", lambda, meanL, meanW,
+                    lambda * meanW, meanL / lambda, meanL / meanW, lambda * meanW / meanL));
+
         }
-
-        // Detta �r simuleringsloopen:
-        // This is the main loop
-
-        while (time < 100000) {
-            actSignal = SignalList.FetchSignal();
-            time = actSignal.arrivalTime;
-            actSignal.destination.TreatSignal(actSignal);
-        }
-
-        // Slutligen skrivs resultatet av simuleringen ut nedan:
-        // Finally the result of the simulation is printed below:
-
-        System.out.println("Mean number of customers in queuing system: " + 1.0 * Q1.accumulated / Q1.noMeasurements);
-
     }
 }
