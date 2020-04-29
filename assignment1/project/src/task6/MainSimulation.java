@@ -37,7 +37,7 @@ public class MainSimulation extends GlobalSimulation {
 				}
 			}
 			totalAverageServTime += averageServTime/actState.arrivals;
-			overTime += (int)(((actState.time/60)*60) + actState.time%60) - minutesInDay;
+			overTime += (int)(((time/60)*60) + time%60) - minutesInDay;
 		}
 		System.out.println(String.format("%16d|%16d", overTime/1000, (int)totalAverageServTime/1000));
 	}
