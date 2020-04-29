@@ -16,9 +16,12 @@ class Gen extends Proc {
 
 	public Function<Proc[], Proc> procPicker;
 
+	public String name;
+
 	public DoubleFunction<Double> timePicker;
 
-	public Gen(double mean, Proc[] sendTo, Function<Proc[], Proc> procPicker) {
+	public Gen(String name, double mean, Proc[] sendTo, Function<Proc[], Proc> procPicker) {
+		this.name = name;
 		this.mean = mean;
 		this.sendTo = sendTo;
 		this.procPicker = procPicker;
