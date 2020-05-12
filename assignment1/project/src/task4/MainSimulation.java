@@ -54,17 +54,8 @@ public class MainSimulation extends GlobalSimulation {
 				standardDeviation += datapoints[j];
 			}
 			standardDeviation = 1.96 * (standardDeviation/M[i]);
-			for (int j = 0; j < datapoints.length; j++) {
-				if (average+standardDeviation >= datapoints[j] && average-standardDeviation <= datapoints[j] ){
-					if (currentCI == longestCI) {
-						longestCI++;
-					}
-					currentCI++;
-				} else {
-					currentCI = 0;
-				}
-			}
-			System.out.println(String.format("%20f|%20f|%15d", (average), Math.sqrt(standardDeviation/(average)), longestCI));
+			
+			System.out.println(String.format("%20f|%20f|%15s", (average), Math.sqrt(standardDeviation/(average)), average + " +- " + standardDeviation));
 		}
 	}
 }
