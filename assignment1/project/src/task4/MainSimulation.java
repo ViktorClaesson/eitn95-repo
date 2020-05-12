@@ -16,7 +16,7 @@ public class MainSimulation extends GlobalSimulation {
 
 		Event actEvent;
 		State actState;
-		System.out.println(String.format("%20s|%20s|%15s", "Mean", "Standard Deviation", "CI Length"));
+		System.out.println(String.format("%10s|%10s|%18s|%10s", "Mean", "STD", "CI", "CI Length"));
 		for (int i = 0; i < T.length; i++) {
 			average = 0.0;
 			standardDeviation = 0.0;
@@ -46,13 +46,12 @@ public class MainSimulation extends GlobalSimulation {
 			fw.close();
 			average = average / M[i];
 			for (int j = 0; j < datapoints.length; j++) {
-				datapoints[j] = Math.pow(datapoints[j] - average, 2);
-				standardDeviation += datapoints[j];
+				standardDeviation += Math.pow(datapoints[j] - average, 2);
 			}
-			standardDeviation = Math.sqrt((standardDeviation / (M[i] - 1)));
+			standardDeviation = Math.sqrt(standardDeviation / (M[i] - 1));
 
-			System.out
-					.println(String.format("%20f|%20f|%15s", average, standardDeviation, 2 * standardDeviation * 1.96));
+			System.out.println(String.format("%10.3f|%10.3f|%18s|%10.3f", average, standardDeviation,
+					String.format("%6.2f +- %6.2f", average, 1.96 * standardDeviation), 2 * standardDeviation * 1.96));
 		}
 	}
 }
