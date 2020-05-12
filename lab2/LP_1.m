@@ -10,4 +10,4 @@ b = [1500;
     1575;
     420];
 
-[x,fval,exitflag,output] = glpk(c, A, b, [], [], "UUU", "II", -1)
+[x,fval,exitflag,output] = glpk(c, A, b, [], [], "UUU", "CC", -1)
