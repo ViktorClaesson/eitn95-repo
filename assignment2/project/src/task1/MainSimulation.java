@@ -70,7 +70,7 @@ public class MainSimulation extends Global {
 		double[] ubL = Arrays.asList(prop.getProperty("ub", "1.5").split(", ")).stream()
 				.mapToDouble(Double::parseDouble).toArray();
 
-		FileWriter fw = new FileWriter("src/task1/output.txt");
+		FileWriter fw = new FileWriter("src/task1/results/output.txt");
 		String header = String.format("%8s\t%8s\t%8s\t%8s\t%4s\t%4s\t%4s\t%4s\t%4s\t%4s\n", "succRate", "lossRate",
 				"load", "time", "ts", "tp", "r", "n", "lb", "ub");
 		fw.write(header);
