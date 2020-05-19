@@ -1,7 +1,7 @@
 package task1;
 
 class Signal {
-	public Proc destination;
+	public Proc sender, destination;
 	public double arrivalTime;
 	public int signalType;
 	public Signal next;
