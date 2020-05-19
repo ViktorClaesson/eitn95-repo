@@ -79,10 +79,12 @@ public class MainSimulation extends Global {
 				.toArray();
 		int runs = Integer.parseInt(prop.getProperty("runs", "1"));
 
-		FileWriter fw = new FileWriter("src/task1/results/output.txt");
-		String header = String.format("%8s\t%8s\t%8s\t%10s\t%6s\t%4s\t%4s\t%4s\t%4s\t%4s\t%4s\t%14s\t%8s\n", "succRate",
-				"lossRate", "load", "time", "runs", "ts", "tp", "r", "n", "lb", "ub", "reach gateway", "n*succ");
-		fw.write(header);
+		FileWriter fw_avg = new FileWriter("src/task1/results/avg.txt");
+		FileWriter fw_all = new FileWriter("src/task1/results/all.txt");
+		String header = String.format("%8s\t%8s\t%8s\t%10s\t%4s\t%6s\t%4s\t%4s\t%6s\t%4s\t%4s\t%8s\t%8s\n", "succRate",
+				"lossRate", "load", "time", "runs", "ts", "tp", "r", "n", "lb", "ub", "%!dead", "n*succ");
+		fw_all.write(header);
+		fw_avg.write(header);
 		System.out.print(header);
 		for (int ts : tsL) {
 			for (int tp : tpL) {
@@ -96,7 +98,7 @@ public class MainSimulation extends Global {
 									new SignalList();
 
 									ub = Math.max(lb, ub);
-									withinGateway += taskCD(ts, tp, radius, nbrTowers, lb, ub);
+									double withinGateway_run = taskCD(ts, tp, radius, nbrTowers, lb, ub);
 
 									// RESET GLOBAL VARIABLES
 									time = 0;
@@ -107,20 +109,30 @@ public class MainSimulation extends Global {
 										actSignal.destination.TreatSignal(actSignal);
 									}
 
-									succRate += 1.0 * state.successful_transmissions / state.transmissions;
-									lossRate += 1.0 - succRate;
-									load += state.transmissions / time;
+									double succRate_run = 1.0 * state.successful_transmissions / state.transmissions;
+									double lossRate_run = 1.0 - succRate_run;
+									double load_run = state.transmissions / time;
+
+									succRate += succRate_run;
+									lossRate += lossRate_run;
+									load += load_run;
+									withinGateway += withinGateway_run;
+
+									String output = String.format(
+											"%8.5f\t%8.5f\t%8.5f\t%10.2f\t%4d\t%6d\t%4d\t%4d\t%6d\t%4.2f\t%4.2f\t%8.2f\t%8.2f\n",
+											succRate_run, lossRate_run, load_run, time, runs, ts, tp, radius, nbrTowers,
+											lb, ub, withinGateway, nbrTowers * succRate_run);
+									fw_all.write(output);
 								}
 								withinGateway /= runs;
 								succRate /= runs;
 								lossRate /= runs;
 								load /= runs;
 								String output = String.format(
-										"%8.4f\t%8.4f\t%8.4f\t%10.2f\t%6d\t%4d\t%4d\t%4d\t%4d\t%4.2f\t%4.2f\t%14.2f\t%8.2f\n",
+										"%8.5f\t%8.5f\t%8.5f\t%10.2f\t%4d\t%6d\t%4d\t%4d\t%6d\t%4.2f\t%4.2f\t%8.2f\t%8.2f\n",
 										succRate, lossRate, load, time, runs, ts, tp, radius, nbrTowers, lb, ub,
 										withinGateway, nbrTowers * succRate);
-								fw.write(output);
-								fw.flush();
+								fw_avg.write(output);
 								System.out.print(output);
 							}
 						}
@@ -128,6 +140,7 @@ public class MainSimulation extends Global {
 				}
 			}
 		}
-		fw.close();
+		fw_all.close();
+		fw_avg.close();
 	}
 }
