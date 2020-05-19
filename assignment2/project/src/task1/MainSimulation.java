@@ -71,6 +71,10 @@ public class MainSimulation extends Global {
 				.mapToDouble(Double::parseDouble).toArray();
 
 		FileWriter fw = new FileWriter("src/task1/output.txt");
+		String header = String.format("%8s\t%8s\t%8s\t%8s\t%4s\t%4s\t%4s\t%4s\t%4s\t%4s\n", "succRate", "lossRate",
+				"load", "time", "ts", "tp", "r", "n", "lb", "ub");
+		fw.write(header);
+		System.out.print(header);
 		for (int ts : tsL) {
 			for (int tp : tpL) {
 				for (int radius : radiusL) {
@@ -85,17 +89,19 @@ public class MainSimulation extends Global {
 								// RESET GLOBAL VARIABLES
 								time = 0;
 								state.reset();
-								while (state.transmissions < 25000) {
+								while (state.transmissions < 100000) {
 									actSignal = SignalList.FetchSignal();
 									time = actSignal.arrivalTime;
 									actSignal.destination.TreatSignal(actSignal);
 								}
 
-								double lossRate = 1.0 * (state.transmissions - state.successful_transmissions)
-										/ state.transmissions;
+								double succRate = 1.0 * state.successful_transmissions / state.transmissions;
+								double lossRate = 1.0 - succRate;
 								double load = state.transmissions / time;
 
-								String output = String.format("%.4f\t%.4f\t%f\n", lossRate, load, time);
+								String output = String.format(
+										"%8.4f\t%8.4f\t%8.4f\t%8.2f\t%4d\t%4d\t%4d\t%4d\t%4.2f\t%4.2f\n", succRate,
+										lossRate, load, time, ts, tp, radius, nbrTowers, lb, ub);
 								fw.write(output);
 								System.out.print(output);
 							}
