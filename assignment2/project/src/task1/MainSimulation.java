@@ -59,26 +59,29 @@ public class MainSimulation extends Global {
 	public static void main(String[] args) throws IOException {
 		// READ CONFIG
 		Properties prop = new Properties();
-		FileInputStream fis = new FileInputStream(args[0]);
-		prop.load(fis);
-		fis.close();
+		if (args.length > 0) {
+			FileInputStream fis = new FileInputStream(args[0]);
+			prop.load(fis);
+			fis.close();
+		}
 
 		int[] tsL = Arrays.asList(prop.getProperty("ts", "4000").split(", ")).stream().mapToInt(Integer::parseInt)
 				.toArray();
 		int[] tpL = Arrays.asList(prop.getProperty("tp", "1").split(", ")).stream().mapToInt(Integer::parseInt)
 				.toArray();
-		int[] radiusL = Arrays.asList(prop.getProperty("r", "7").split(", ")).stream().mapToInt(Integer::parseInt)
+		int[] radiusL = Arrays.asList(prop.getProperty("r", "15").split(", ")).stream().mapToInt(Integer::parseInt)
 				.toArray();
-		int[] nbrTowersL = Arrays.asList(prop.getProperty("n", "1000").split(", ")).stream().mapToInt(Integer::parseInt)
+		int[] nbrTowersL = Arrays.asList(prop.getProperty("n", "2660").split(", ")).stream().mapToInt(Integer::parseInt)
 				.toArray();
 		double[] lbL = Arrays.asList(prop.getProperty("lb", "1").split(", ")).stream().mapToDouble(Double::parseDouble)
 				.toArray();
 		double[] ubL = Arrays.asList(prop.getProperty("ub", "1").split(", ")).stream().mapToDouble(Double::parseDouble)
 				.toArray();
+		int runs = Integer.parseInt(prop.getProperty("runs", "1"));
 
 		FileWriter fw = new FileWriter("src/task1/results/output.txt");
-		String header = String.format("%8s\t%8s\t%8s\t%10s\t%4s\t%4s\t%4s\t%4s\t%4s\t%4s\t%14s\n", "succRate",
-				"lossRate", "load", "time", "ts", "tp", "r", "n", "lb", "ub", "reach gateway");
+		String header = String.format("%8s\t%8s\t%8s\t%10s\t%6s\t%4s\t%4s\t%4s\t%4s\t%4s\t%4s\t%14s\t%8s\n", "succRate",
+				"lossRate", "load", "time", "runs", "ts", "tp", "r", "n", "lb", "ub", "reach gateway", "n*succ");
 		fw.write(header);
 		System.out.print(header);
 		for (int ts : tsL) {
@@ -87,29 +90,35 @@ public class MainSimulation extends Global {
 					for (int nbrTowers : nbrTowersL) {
 						for (double lb : lbL) {
 							for (double ub : ubL) {
-								Signal actSignal;
-								new SignalList();
+								double withinGateway = 0, succRate = 0, lossRate = 0, load = 0;
+								for (int i = 0; i < runs; i++) {
+									Signal actSignal;
+									new SignalList();
 
-								ub = Math.max(lb, ub);
-								double withinGateway = taskCD(ts, tp, radius, nbrTowers, lb, ub);
+									ub = Math.max(lb, ub);
+									withinGateway += taskCD(ts, tp, radius, nbrTowers, lb, ub);
 
-								// RESET GLOBAL VARIABLES
-								time = 0;
-								state.reset();
-								while (state.transmissions < 100000) {
-									actSignal = SignalList.FetchSignal();
-									time = actSignal.arrivalTime;
-									actSignal.destination.TreatSignal(actSignal);
+									// RESET GLOBAL VARIABLES
+									time = 0;
+									state.reset();
+									while (state.transmissions < 100000) {
+										actSignal = SignalList.FetchSignal();
+										time = actSignal.arrivalTime;
+										actSignal.destination.TreatSignal(actSignal);
+									}
+
+									succRate += 1.0 * state.successful_transmissions / state.transmissions;
+									lossRate += 1.0 - succRate;
+									load += state.transmissions / time;
 								}
-
-								double succRate = 1.0 * state.successful_transmissions / state.transmissions;
-								double lossRate = 1.0 - succRate;
-								double load = state.transmissions / time;
-
+								withinGateway /= runs;
+								succRate /= runs;
+								lossRate /= runs;
+								load /= runs;
 								String output = String.format(
-										"%8.4f\t%8.4f\t%8.4f\t%10.2f\t%4d\t%4d\t%4d\t%4d\t%4.2f\t%4.2f\t%14.2f\n",
-										succRate, lossRate, load, time, ts, tp, radius, nbrTowers, lb, ub,
-										withinGateway);
+										"%8.4f\t%8.4f\t%8.4f\t%10.2f\t%6d\t%4d\t%4d\t%4d\t%4d\t%4.2f\t%4.2f\t%14.2f\t%8.2f\n",
+										succRate, lossRate, load, time, runs, ts, tp, radius, nbrTowers, lb, ub,
+										withinGateway, nbrTowers * succRate);
 								fw.write(output);
 								fw.flush();
 								System.out.print(output);
