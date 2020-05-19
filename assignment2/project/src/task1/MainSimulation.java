@@ -1,3 +1,5 @@
+package task1;
+
 import java.io.*;
 
 //Denna klass �rver Global s� att man kan anv�nda time och signalnamnen utan punktnotation

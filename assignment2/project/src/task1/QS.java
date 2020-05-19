@@ -1,3 +1,5 @@
+package task1;
+
 import java.util.*;
 
 // This class defines a simple queuing system with one server. It inherits Proc so that we can use time and the
