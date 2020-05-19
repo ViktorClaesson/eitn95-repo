@@ -2,7 +2,6 @@ package task1;
 
 import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class MainSimulation extends Global {
 	static class Node {
