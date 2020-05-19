@@ -15,8 +15,42 @@ public class MainSimulation extends Global {
 		}
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void taskAB(int ts, int tp, int radius, int nbrTowers) {
+		Gateway gateway = new Gateway();
+		for (int i = 0; i < nbrTowers; i++) {
+			double x = 10 * random.nextDouble();
+			double y = 10 * random.nextDouble();
+			double dist = Math.hypot(x - 5, y - 5);
+			SimpleSensorTower st = new SimpleSensorTower(dist < radius ? gateway : null, ts, tp);
+			SignalList.SendSignal(BEGIN_TRANSMISSION, st, expRandom(tp));
+		}
+	}
 
+	public static void taskCD(int ts, int tp, int radius, int nbrTowers, double lb, double ub) {
+		Gateway gateway = new Gateway();
+		LinkedList<Node> nodeList = new LinkedList<>();
+		for (int i = 0; i < nbrTowers; i++) {
+			double x = 10 * random.nextDouble();
+			double y = 10 * random.nextDouble();
+			double dist = Math.hypot(x - 5, y - 5);
+			SmartSensorTower st = new SmartSensorTower(dist < radius ? gateway : null, ts, tp, lb, ub);
+			nodeList.add(new Node(x, y, st));
+			SignalList.SendSignal(BEGIN_TRANSMISSION, st, expRandom(tp));
+		}
+		for (Node node : nodeList) {
+			List<SmartSensorTower> withinRadius = new ArrayList<>();
+			for (Node other : nodeList) {
+				if (node == other)
+					continue;
+
+				if (Math.hypot(other.y - node.y, other.x - node.x) < radius)
+					withinRadius.add(other.tower);
+			}
+			node.tower.addTowersWithinRadius(withinRadius);
+		}
+	}
+
+	public static void main(String[] args) throws IOException {
 		// READ CONFIG
 		Properties prop = new Properties();
 		FileInputStream fis = new FileInputStream(args[0]);
@@ -46,28 +80,7 @@ public class MainSimulation extends Global {
 								Signal actSignal;
 								new SignalList();
 
-								Gateway gateway = new Gateway();
-								LinkedList<Node> nodeList = new LinkedList<>();
-								for (int i = 0; i < nbrTowers; i++) {
-									double x = 10 * random.nextDouble();
-									double y = 10 * random.nextDouble();
-									double dist = Math.hypot(x - 5, y - 5);
-									SmartSensorTower st = new SmartSensorTower(dist < radius ? gateway : null, ts, tp,
-											lb, ub);
-									nodeList.add(new Node(x, y, st));
-									SignalList.SendSignal(BEGIN_TRANSMISSION, st, expRandom(tp));
-								}
-								for (Node node : nodeList) {
-									List<SmartSensorTower> withinRadius = new ArrayList<>();
-									for (Node other : nodeList) {
-										if (node == other)
-											continue;
-
-										if (Math.hypot(other.y - node.y, other.x - node.x) < radius)
-											withinRadius.add(other.tower);
-									}
-									node.tower.addTowersWithinRadius(withinRadius);
-								}
+								taskCD(ts, tp, radius, nbrTowers, lb, ub);
 
 								// RESET GLOBAL VARIABLES
 								time = 0;
