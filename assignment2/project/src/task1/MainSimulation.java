@@ -67,8 +67,8 @@ public class MainSimulation extends Global {
 				.toArray();
 		double[] lbL = Arrays.asList(prop.getProperty("lb", "1").split(", ")).stream().mapToDouble(Double::parseDouble)
 				.toArray();
-		double[] ubL = Arrays.asList(prop.getProperty("ub", "1.5").split(", ")).stream()
-				.mapToDouble(Double::parseDouble).toArray();
+		double[] ubL = Arrays.asList(prop.getProperty("ub", "1").split(", ")).stream().mapToDouble(Double::parseDouble)
+				.toArray();
 
 		FileWriter fw = new FileWriter("src/task1/results/output.txt");
 		String header = String.format("%8s\t%8s\t%8s\t%8s\t%4s\t%4s\t%4s\t%4s\t%4s\t%4s\n", "succRate", "lossRate",
@@ -103,6 +103,7 @@ public class MainSimulation extends Global {
 										"%8.4f\t%8.4f\t%8.4f\t%8.2f\t%4d\t%4d\t%4d\t%4d\t%4.2f\t%4.2f\n", succRate,
 										lossRate, load, time, ts, tp, radius, nbrTowers, lb, ub);
 								fw.write(output);
+								fw.flush();
 								System.out.print(output);
 							}
 						}
