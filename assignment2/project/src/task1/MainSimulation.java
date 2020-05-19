@@ -15,7 +15,8 @@ public class MainSimulation extends Global {
 		}
 	}
 
-	public static void taskAB(int ts, int tp, int radius, int nbrTowers) {
+	public static double taskAB(int ts, int tp, int radius, int nbrTowers) {
+		int withinGateway = 0;
 		Gateway gateway = new Gateway();
 		for (int i = 0; i < nbrTowers; i++) {
 			double x = 10 * random.nextDouble();
@@ -23,10 +24,13 @@ public class MainSimulation extends Global {
 			double dist = Math.hypot(x - 5, y - 5);
 			SimpleSensorTower st = new SimpleSensorTower(dist < radius ? gateway : null, ts, tp);
 			SignalList.SendSignal(BEGIN_TRANSMISSION, st, expRandom(tp));
+			withinGateway = dist < radius ? withinGateway + 1 : withinGateway;
 		}
+		return 1.0 * withinGateway / nbrTowers;
 	}
 
-	public static void taskCD(int ts, int tp, int radius, int nbrTowers, double lb, double ub) {
+	public static double taskCD(int ts, int tp, int radius, int nbrTowers, double lb, double ub) {
+		int withinGateway = 0;
 		Gateway gateway = new Gateway();
 		LinkedList<Node> nodeList = new LinkedList<>();
 		for (int i = 0; i < nbrTowers; i++) {
@@ -36,6 +40,7 @@ public class MainSimulation extends Global {
 			SmartSensorTower st = new SmartSensorTower(dist < radius ? gateway : null, ts, tp, lb, ub);
 			nodeList.add(new Node(x, y, st));
 			SignalList.SendSignal(BEGIN_TRANSMISSION, st, expRandom(tp));
+			withinGateway = dist < radius ? withinGateway + 1 : withinGateway;
 		}
 		for (Node node : nodeList) {
 			List<SmartSensorTower> withinRadius = new ArrayList<>();
@@ -48,6 +53,7 @@ public class MainSimulation extends Global {
 			}
 			node.tower.addTowersWithinRadius(withinRadius);
 		}
+		return 1.0 * withinGateway / nbrTowers;
 	}
 
 	public static void main(String[] args) throws IOException {
@@ -71,8 +77,8 @@ public class MainSimulation extends Global {
 				.toArray();
 
 		FileWriter fw = new FileWriter("src/task1/results/output.txt");
-		String header = String.format("%8s\t%8s\t%8s\t%8s\t%4s\t%4s\t%4s\t%4s\t%4s\t%4s\n", "succRate", "lossRate",
-				"load", "time", "ts", "tp", "r", "n", "lb", "ub");
+		String header = String.format("%8s\t%8s\t%8s\t%10s\t%4s\t%4s\t%4s\t%4s\t%4s\t%4s\t%14s\n", "succRate",
+				"lossRate", "load", "time", "ts", "tp", "r", "n", "lb", "ub", "reach gateway");
 		fw.write(header);
 		System.out.print(header);
 		for (int ts : tsL) {
@@ -84,7 +90,8 @@ public class MainSimulation extends Global {
 								Signal actSignal;
 								new SignalList();
 
-								taskCD(ts, tp, radius, nbrTowers, lb, ub);
+								ub = Math.max(lb, ub);
+								double withinGateway = taskCD(ts, tp, radius, nbrTowers, lb, ub);
 
 								// RESET GLOBAL VARIABLES
 								time = 0;
@@ -100,8 +107,9 @@ public class MainSimulation extends Global {
 								double load = state.transmissions / time;
 
 								String output = String.format(
-										"%8.4f\t%8.4f\t%8.4f\t%8.2f\t%4d\t%4d\t%4d\t%4d\t%4.2f\t%4.2f\n", succRate,
-										lossRate, load, time, ts, tp, radius, nbrTowers, lb, ub);
+										"%8.4f\t%8.4f\t%8.4f\t%10.2f\t%4d\t%4d\t%4d\t%4d\t%4.2f\t%4.2f\t%14.2f\n",
+										succRate, lossRate, load, time, ts, tp, radius, nbrTowers, lb, ub,
+										withinGateway);
 								fw.write(output);
 								fw.flush();
 								System.out.print(output);
