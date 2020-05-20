@@ -82,6 +82,18 @@ public class MainSimulation extends Global {
 		return 1.0 * withinGateway / nbrTowers;
 	}
 
+	public static int sims(double[] lbs, double[] ubs) {
+		int count = 0;
+		for (double lb : lbs) {
+			for (double ub : ubs) {
+				if (ub < lb)
+					continue;
+				count++;
+			}
+		}
+		return count;
+	}
+
 	public static void main(String[] args) throws IOException {
 		// READ CONFIG
 		Properties prop = new Properties();
@@ -106,6 +118,10 @@ public class MainSimulation extends Global {
 		boolean smart = Boolean.parseBoolean(prop.getProperty("smart", "false"));
 		int runs = Integer.parseInt(prop.getProperty("runs", "1"));
 
+		System.out.printf("Running %d %s simulations...\n",
+				runs * tsL.length * tpL.length * radiusL.length * nbrTowersL.length * sims(lbL, ubL),
+				smart ? "smart" : "simple");
+
 		new File("src/task1/results/").mkdirs();
 		FileWriter fw_avg = new FileWriter("src/task1/results/avg.txt");
 		FileWriter fw_all = new FileWriter("src/task1/results/all.txt");
@@ -129,6 +145,7 @@ public class MainSimulation extends Global {
 		fw_all.write(String.format(header_all, header_values_all));
 		fw_avg.write(String.format(header_avg, header_values_avg));
 		System.out.print(String.format(header_sys, header_values_sys));
+		long timestamp_start = System.currentTimeMillis();
 		for (int ts : tsL) {
 			for (int tp : tpL) {
 				for (int radius : radiusL) {
@@ -199,6 +216,11 @@ public class MainSimulation extends Global {
 				}
 			}
 		}
+		long timestamp_end = System.currentTimeMillis();
+		System.out.printf("Ran %d %s simulations @ %.2f seconds\n",
+				runs * tsL.length * tpL.length * radiusL.length * nbrTowersL.length * sims(lbL, ubL),
+				smart ? "smart" : "simple", (timestamp_end - timestamp_start) * 1e-3);
+
 		fw_all.close();
 		fw_avg.close();
 	}
