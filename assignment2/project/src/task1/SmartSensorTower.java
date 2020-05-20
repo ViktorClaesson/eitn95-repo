@@ -45,6 +45,7 @@ class SmartSensorTower extends SignalTreater {
                 Global.SendSignal(Signal.Type.CHECK_NETWORK, this, Global.expRandom(ts));
                 break;
             default:
+                TypeNotImplemented();
                 break;
         }
     }

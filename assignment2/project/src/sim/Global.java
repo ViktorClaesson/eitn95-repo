@@ -1,12 +1,17 @@
 package sim;
 
 import java.util.Random;
+import java.util.function.BooleanSupplier;
 import java.util.PriorityQueue;
 
 public class Global {
 	private static PriorityQueue<Signal> signalList = new PriorityQueue<>();
-	public static double time = 0;
-	public static Random random = new Random();
+	private static double time = 0;
+	private static Random random = new Random();
+
+	public static double time() {
+		return time;
+	}
 
 	public static double uniRandom(double lb, double ub) {
 		return lb + random.nextDouble() * (ub - lb);
@@ -20,10 +25,16 @@ public class Global {
 		signalList.add(new Signal(type, dest, time + delay));
 	}
 
-	public static void advance() {
+	private static void advance() {
 		Signal actSignal = signalList.poll();
 		time = actSignal.arrivalTime;
 		actSignal.destination.TreatSignal(actSignal);
+	}
+
+	public static void advanceUntil(BooleanSupplier bs) {
+		while (bs.getAsBoolean()) {
+			advance();
+		}
 	}
 
 	public static void reset() {

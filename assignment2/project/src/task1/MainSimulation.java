@@ -165,6 +165,7 @@ public class MainSimulation {
 								for (int i = 0; i < runs; i++) {
 									// Reset Global
 									Global.reset();
+									Data.reset();
 
 									// Init simulation
 									double withinGateway_run;
@@ -176,14 +177,14 @@ public class MainSimulation {
 									withinGateway += withinGateway_run;
 
 									// Run simulation
-									while (Data.transmissions < 5000 || Global.time < ts) {
-										Global.advance();
-									}
-									time_run[i] = Global.time;
+									Global.advanceUntil(() -> (Data.transmissions < 5000 || Global.time() < ts));
+
+									// Record data
+									time_run[i] = Global.time();
 									succRate_run[i] = 1.0 * Data.successful_transmissions / Data.transmissions;
 									lossRate_run[i] = 1.0 - succRate_run[i];
-									load_run[i] = Data.transmissions / Global.time;
-									T_put_run[i] = Data.successful_transmissions / Global.time;
+									load_run[i] = Data.transmissions / Global.time();
+									T_put_run[i] = Data.successful_transmissions / Global.time();
 
 									// simulation analysis
 									Object[] result_values_all = new Object[] { succRate_run[i], lossRate_run[i],

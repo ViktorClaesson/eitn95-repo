@@ -1,28 +1,26 @@
 package task1;
 
 import sim.*;
-import java.util.*;
-import java.util.stream.*;
 
 class Gateway extends SignalTreater {
-    private LinkedList<Boolean> currentRec = new LinkedList<>();
+    private int transsions = 0;
+    private boolean interference = false;
 
     public void TreatSignal(Signal x) {
         switch (x.signalType) {
             case BEGIN_TRANSMISSION:
-                if (currentRec.size() == 0) {
-                    currentRec.add(true);
-                } else {
-                    currentRec = currentRec.stream().map(b -> false).collect(Collectors.toCollection(LinkedList::new));
-                    currentRec.add(false);
-                }
+                transsions++;
+                interference = transsions > 1;
                 break;
             case END_TRANSMISSION:
-                if (currentRec.pop()) {
+                if (transsions == 1 && !interference) {
                     Data.successful_transmissions++;
                 }
+                interference = transsions > 1;
+                transsions--;
                 break;
             default:
+                TypeNotImplemented();
                 break;
         }
     }

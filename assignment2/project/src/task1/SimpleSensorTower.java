@@ -28,6 +28,7 @@ class SimpleSensorTower extends SignalTreater {
                 Global.SendSignal(Signal.Type.BEGIN_TRANSMISSION, this, Global.expRandom(ts));
                 break;
             default:
+                TypeNotImplemented();
                 break;
         }
     }

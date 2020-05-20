@@ -12,16 +12,10 @@ public class MainSimulation {
 		SignalTreater q = new Queue();
 
 		// Send init signals
-		Global.SendSignal(Signal.Type.TEST, q, Global.time);
+		Global.SendSignal(Signal.Type.TEST, q, 0);
 
 		// Run simulation
-		while (Global.time < 100000) {
-			try {
-				Global.advance();
-			} catch (Exception e) {
-				System.err.println(e);
-			}
-		}
+		Global.advanceUntil(() -> Global.time() > 1000);
 
 		// Analysis
 		System.out.println("done");
