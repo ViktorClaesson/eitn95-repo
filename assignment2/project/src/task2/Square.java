@@ -2,7 +2,7 @@ package task2;
 
 import sim.*;
 
-class Queue extends SignalTreater {
+class Square extends SignalTreater {
 	public void TreatSignal(Signal x) {
 		switch (x.signalType) {
 			case TEST: {

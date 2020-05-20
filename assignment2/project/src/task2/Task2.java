@@ -1,15 +1,12 @@
 package task2;
 
-import java.io.*;
-import sim.Global;
-import sim.SignalTreater;
-import sim.Signal;
+import sim.*;
 
-public class MainSimulation {
+public class Task2 {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		// Init the simulation
-		SignalTreater q = new Queue();
+		SignalTreater q = new Square();
 
 		// Send init signals
 		Global.SendSignal(Signal.Type.TEST, q, 0);

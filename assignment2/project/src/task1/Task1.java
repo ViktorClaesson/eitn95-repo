@@ -4,7 +4,7 @@ import sim.*;
 import java.io.*;
 import java.util.*;
 
-public class MainSimulation {
+public class Task1 {
 	static class Node {
 		double x, y;
 		public SmartSensorTower tower;
