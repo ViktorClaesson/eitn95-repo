@@ -1,9 +1,10 @@
 package task1;
 
+import sim.*;
 import java.io.*;
 import java.util.*;
 
-public class MainSimulation extends Global {
+public class MainSimulation {
 	static class Node {
 		double x, y;
 		public SmartSensorTower tower;
@@ -45,11 +46,11 @@ public class MainSimulation extends Global {
 		int withinGateway = 0;
 		Gateway gateway = new Gateway();
 		for (int i = 0; i < nbrTowers; i++) {
-			double x = 10 * random.nextDouble();
-			double y = 10 * random.nextDouble();
+			double x = Global.uniRandom(0, 10);
+			double y = Global.uniRandom(0, 10);
 			double dist = Math.hypot(x - 5, y - 5);
 			SimpleSensorTower st = new SimpleSensorTower(dist < radius ? gateway : null, ts, tp);
-			SignalList.SendSignal(BEGIN_TRANSMISSION, st, expRandom(ts));
+			Global.SendSignal(Signal.Type.BEGIN_TRANSMISSION, st, Global.expRandom(ts));
 			withinGateway = dist < radius ? withinGateway + 1 : withinGateway;
 		}
 		return 1.0 * withinGateway / nbrTowers;
@@ -60,12 +61,12 @@ public class MainSimulation extends Global {
 		Gateway gateway = new Gateway();
 		LinkedList<Node> nodeList = new LinkedList<>();
 		for (int i = 0; i < nbrTowers; i++) {
-			double x = 10 * random.nextDouble();
-			double y = 10 * random.nextDouble();
+			double x = Global.uniRandom(0, 10);
+			double y = Global.uniRandom(0, 10);
 			double dist = Math.hypot(x - 5, y - 5);
 			SmartSensorTower st = new SmartSensorTower(dist < radius ? gateway : null, ts, tp, lb, ub);
 			nodeList.add(new Node(x, y, st));
-			SignalList.SendSignal(BEGIN_TRANSMISSION, st, expRandom(ts));
+			Global.SendSignal(Signal.Type.BEGIN_TRANSMISSION, st, Global.expRandom(ts));
 			withinGateway = dist < radius ? withinGateway + 1 : withinGateway;
 		}
 		for (Node node : nodeList) {
@@ -162,9 +163,10 @@ public class MainSimulation extends Global {
 								double[] load_run = new double[runs];
 								double[] T_put_run = new double[runs];
 								for (int i = 0; i < runs; i++) {
-									Signal actSignal;
-									new SignalList();
+									// Reset Global
+									Global.reset();
 
+									// Init simulation
 									double withinGateway_run;
 									if (!smart) {
 										withinGateway_run = taskAB(ts, tp, radius, nbrTowers);
@@ -173,26 +175,25 @@ public class MainSimulation extends Global {
 									}
 									withinGateway += withinGateway_run;
 
-									// RESET GLOBAL VARIABLES
-									time = 0;
-									state.reset();
-									while (state.transmissions < 5000 || time < ts) {
-										actSignal = SignalList.FetchSignal();
-										time = actSignal.arrivalTime;
-										actSignal.destination.TreatSignal(actSignal);
+									// Run simulation
+									while (Data.transmissions < 5000 || Global.time < ts) {
+										Global.advance();
 									}
-									time_run[i] = time;
-									succRate_run[i] = 1.0 * state.successful_transmissions / state.transmissions;
+									time_run[i] = Global.time;
+									succRate_run[i] = 1.0 * Data.successful_transmissions / Data.transmissions;
 									lossRate_run[i] = 1.0 - succRate_run[i];
-									load_run[i] = state.transmissions / time;
-									T_put_run[i] = state.successful_transmissions / time;
+									load_run[i] = Data.transmissions / Global.time;
+									T_put_run[i] = Data.successful_transmissions / Global.time;
 
+									// simulation analysis
 									Object[] result_values_all = new Object[] { succRate_run[i], lossRate_run[i],
 											load_run[i], T_put_run[i], time_run[i], runs, ts, tp, radius, nbrTowers, lb,
 											ub, withinGateway_run, nbrTowers * succRate_run[i] };
 									String output = String.format(result_all, result_values_all);
 									fw_all.write(output);
 								}
+
+								// combined runs analysis
 								withinGateway /= runs;
 								Statistic time_stat = new Statistic(time_run);
 								Statistic succRate = new Statistic(succRate_run);

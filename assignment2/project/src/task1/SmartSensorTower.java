@@ -1,8 +1,9 @@
 package task1;
 
+import sim.*;
 import java.util.List;
 
-class SmartSensorTower extends Proc {
+class SmartSensorTower extends SignalTreater {
     private int ts, tp;
     private double lb, ub;
     private Gateway gateway;
@@ -25,23 +26,25 @@ class SmartSensorTower extends Proc {
     public void TreatSignal(Signal x) {
         switch (x.signalType) {
             case CHECK_NETWORK:
-                double sleep = others.stream().anyMatch(sst -> sst.isTransmitting) ? uniRandom(lb, ub) : 0;
-                SignalList.SendSignal(BEGIN_TRANSMISSION, this, time + sleep);
+                double sleep = others.stream().anyMatch(sst -> sst.isTransmitting) ? Global.uniRandom(lb, ub) : 0;
+                Global.SendSignal(Signal.Type.BEGIN_TRANSMISSION, this, sleep);
                 break;
             case BEGIN_TRANSMISSION:
                 isTransmitting = true;
-                state.transmissions++;
+                Data.transmissions++;
                 if (gateway != null) {
-                    SignalList.SendSignal(BEGIN_TRANSMISSION, gateway, time);
+                    Global.SendSignal(Signal.Type.BEGIN_TRANSMISSION, gateway, 0);
                 }
-                SignalList.SendSignal(END_TRANSMISSION, this, time + tp);
+                Global.SendSignal(Signal.Type.END_TRANSMISSION, this, tp);
                 break;
             case END_TRANSMISSION:
                 isTransmitting = false;
                 if (gateway != null) {
-                    SignalList.SendSignal(END_TRANSMISSION, gateway, time);
+                    Global.SendSignal(Signal.Type.END_TRANSMISSION, gateway, 0);
                 }
-                SignalList.SendSignal(CHECK_NETWORK, this, time + expRandom(ts));
+                Global.SendSignal(Signal.Type.CHECK_NETWORK, this, Global.expRandom(ts));
+                break;
+            default:
                 break;
         }
     }

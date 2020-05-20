@@ -1,6 +1,8 @@
 package task1;
 
-class SimpleSensorTower extends Proc {
+import sim.*;
+
+class SimpleSensorTower extends SignalTreater {
     private int ts, tp;
     private Gateway gateway;
 
@@ -13,17 +15,19 @@ class SimpleSensorTower extends Proc {
     public void TreatSignal(Signal x) {
         switch (x.signalType) {
             case BEGIN_TRANSMISSION:
-                state.transmissions++;
+                Data.transmissions++;
                 if (gateway != null) {
-                    SignalList.SendSignal(BEGIN_TRANSMISSION, gateway, time);
+                    Global.SendSignal(Signal.Type.BEGIN_TRANSMISSION, gateway, 0);
                 }
-                SignalList.SendSignal(END_TRANSMISSION, this, time + tp);
+                Global.SendSignal(Signal.Type.END_TRANSMISSION, this, tp);
                 break;
             case END_TRANSMISSION:
                 if (gateway != null) {
-                    SignalList.SendSignal(END_TRANSMISSION, gateway, time);
+                    Global.SendSignal(Signal.Type.END_TRANSMISSION, gateway, 0);
                 }
-                SignalList.SendSignal(BEGIN_TRANSMISSION, this, time + expRandom(ts));
+                Global.SendSignal(Signal.Type.BEGIN_TRANSMISSION, this, Global.expRandom(ts));
+                break;
+            default:
                 break;
         }
     }

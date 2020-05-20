@@ -1,9 +1,10 @@
 package task1;
 
+import sim.*;
 import java.util.*;
 import java.util.stream.*;
 
-class Gateway extends Proc {
+class Gateway extends SignalTreater {
     private LinkedList<Boolean> currentRec = new LinkedList<>();
 
     public void TreatSignal(Signal x) {
@@ -18,8 +19,10 @@ class Gateway extends Proc {
                 break;
             case END_TRANSMISSION:
                 if (currentRec.pop()) {
-                    state.successful_transmissions++;
+                    Data.successful_transmissions++;
                 }
+                break;
+            default:
                 break;
         }
     }
