@@ -21,14 +21,14 @@ public class Global {
 		return -mean * Math.log(1 - random.nextDouble());
 	}
 
-	public static void SendSignal(Signal.Type type, SignalTreater dest, double delay) {
-		signalList.add(new Signal(type, dest, time + delay));
+	public static void reset() {
+		time = 0;
+		signalList.clear();
+		random = new Random();
 	}
 
-	private static void advance() {
-		Signal actSignal = signalList.poll();
-		time = actSignal.arrivalTime;
-		actSignal.destination.TreatSignal(actSignal);
+	public static void SendSignal(Signal.Type type, SignalTreater dest, double delay) {
+		signalList.add(new Signal(type, dest, time + delay));
 	}
 
 	public static void advanceUntil(BooleanSupplier bs) {
@@ -37,9 +37,9 @@ public class Global {
 		}
 	}
 
-	public static void reset() {
-		time = 0;
-		signalList.clear();
-		random = new Random();
+	private static void advance() {
+		Signal actSignal = signalList.poll();
+		time = actSignal.arrivalTime;
+		actSignal.destination.TreatSignal(actSignal);
 	}
 }
