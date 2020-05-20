@@ -2,7 +2,7 @@ package task1;
 
 import sim.*;
 
-class SimpleSensorTower extends SignalTreater {
+class SimpleSensorTower extends Proc {
     private int ts, tp;
     private Gateway gateway;
 
@@ -12,6 +12,7 @@ class SimpleSensorTower extends SignalTreater {
         this.tp = tp;
     }
 
+    @Override
     public void TreatSignal(Signal x) {
         switch (x.signalType) {
             case BEGIN_TRANSMISSION:

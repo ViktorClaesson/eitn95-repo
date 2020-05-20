@@ -95,11 +95,11 @@ public class Task1 {
 		return count;
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void run(String propertiesFilePath) throws IOException {
 		// READ CONFIG
 		Properties prop = new Properties();
-		if (args.length > 0) {
-			FileInputStream fis = new FileInputStream(args[0]);
+		if (propertiesFilePath != null) {
+			FileInputStream fis = new FileInputStream(propertiesFilePath);
 			prop.load(fis);
 			fis.close();
 		}

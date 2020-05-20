@@ -1,6 +1,6 @@
 package sim;
 
-public abstract class SignalTreater {
+public abstract class Proc {
 	public abstract void TreatSignal(Signal x);
 
 	public void TypeNotImplemented() throws RuntimeException {

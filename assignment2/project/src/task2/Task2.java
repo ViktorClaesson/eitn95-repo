@@ -4,9 +4,9 @@ import sim.*;
 
 public class Task2 {
 
-	public static void main(String[] args) {
+	public static void run() {
 		// Init the simulation
-		SignalTreater q = new Square();
+		Proc q = new Square(0, 0);
 
 		// Send init signals
 		Global.SendSignal(Signal.Type.TEST, q, 0);

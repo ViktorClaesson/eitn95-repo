@@ -2,7 +2,16 @@ package task2;
 
 import sim.*;
 
-class Square extends SignalTreater {
+class Square extends Proc {
+
+	private int x, y;
+
+	public Square(int x, int y) {
+		this.x = x;
+		this.y = y;
+	}
+
+	@Override
 	public void TreatSignal(Signal x) {
 		switch (x.signalType) {
 			case TEST: {

@@ -27,7 +27,7 @@ public class Global {
 		random = new Random();
 	}
 
-	public static void SendSignal(Signal.Type type, SignalTreater dest, double delay) {
+	public static void SendSignal(Signal.Type type, Proc dest, double delay) {
 		signalList.add(new Signal(type, dest, time + delay));
 	}
 

@@ -2,10 +2,11 @@ package task1;
 
 import sim.*;
 
-class Gateway extends SignalTreater {
+class Gateway extends Proc {
     private int transsions = 0;
     private boolean interference = false;
 
+    @Override
     public void TreatSignal(Signal x) {
         switch (x.signalType) {
             case BEGIN_TRANSMISSION:

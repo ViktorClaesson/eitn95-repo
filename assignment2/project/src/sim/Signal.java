@@ -10,10 +10,10 @@ public class Signal implements Comparable<Signal> {
 	}
 
 	public Type signalType;
-	public SignalTreater destination;
+	public Proc destination;
 	public double arrivalTime;
 
-	public Signal(Type signalType, SignalTreater destination, double arrivalTime) {
+	public Signal(Type signalType, Proc destination, double arrivalTime) {
 		this.signalType = signalType;
 		this.destination = destination;
 		this.arrivalTime = arrivalTime;

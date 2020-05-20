@@ -3,7 +3,7 @@ package task1;
 import sim.*;
 import java.util.List;
 
-class SmartSensorTower extends SignalTreater {
+class SmartSensorTower extends Proc {
     private int ts, tp;
     private double lb, ub;
     private Gateway gateway;
@@ -23,6 +23,7 @@ class SmartSensorTower extends SignalTreater {
         this.others = others;
     }
 
+    @Override
     public void TreatSignal(Signal x) {
         switch (x.signalType) {
             case CHECK_NETWORK:
