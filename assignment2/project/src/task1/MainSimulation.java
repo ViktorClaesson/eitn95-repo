@@ -114,8 +114,8 @@ public class MainSimulation extends Global {
 		Object[] header_values_all = new String[] { "S_rate", "L_rate", "λ", "T_put", "time", "runs", "ts", "tp", "r",
 				"n", "lb", "ub", "%!dead", "n*succ" };
 
-		String header_avg = "%8s\t%8s\t%8s\t%8s\t%8s\t%8s\t%8s\t%8s\t%8s\t%8s\t%4s\t%6s\t%4s\t%4s\t%6s\t%4s\t%4s\t%8s\t%8s\n";
-		String result_avg = "%16s\t%16s\t%16s\t%16s\t%16s\t%4d\t%6d\t%4d\t%4d\t%6d\t%4.2f\t%4.2f\t%8.5f\t%8.2f\n";
+		String header_avg = "%8s\t%8s\t%8s\t%8s\t%8s\t%8s\t%8s\t%8s\t%10s\t%10s\t%4s\t%6s\t%4s\t%4s\t%6s\t%4s\t%4s\t%8s\t%8s\n";
+		String result_avg = "%16s\t%16s\t%16s\t%16s\t%10.2f\t%10.4f\t%4d\t%6d\t%4d\t%4d\t%6d\t%4.2f\t%4.2f\t%8.5f\t%8.2f\n";
 		Object[] header_values_avg = new String[] { "S_rate_µ", "S_rate_σ", "L_rate_µ", "L_rate_σ", "λ_µ", "λ_σ",
 				"T_put_µ", "T_put_σ", "time_µ", "time_σ", "runs", "ts", "tp", "r", "n", "lb", "ub", "%!dead_µ",
 				"n*succ" };
@@ -134,6 +134,9 @@ public class MainSimulation extends Global {
 					for (int nbrTowers : nbrTowersL) {
 						for (double lb : lbL) {
 							for (double ub : ubL) {
+								if (ub < lb)
+									continue;
+
 								double withinGateway = 0;
 								double[] time_run = new double[runs];
 								double[] succRate_run = new double[runs];
@@ -144,10 +147,9 @@ public class MainSimulation extends Global {
 									Signal actSignal;
 									new SignalList();
 
-									ub = Math.max(lb, ub);
-									double withinGateway_run = taskAB(ts, tp, radius, nbrTowers);
+									// double withinGateway_run = taskAB(ts, tp, radius, nbrTowers);
+									double withinGateway_run = taskCD(ts, tp, radius, nbrTowers, lb, ub);
 									withinGateway += withinGateway_run;
-									// double withinGateway_run = taskCD(ts, tp, radius, nbrTowers, lb, ub);
 
 									// RESET GLOBAL VARIABLES
 									time = 0;
@@ -176,9 +178,9 @@ public class MainSimulation extends Global {
 								Statistic load = new Statistic(load_run);
 								Statistic T_put = new Statistic(T_put_run);
 
-								Object[] result_values_avg = new Object[] { succRate, lossRate, load, T_put, time_stat,
-										runs, ts, tp, radius, nbrTowers, lb, ub, withinGateway,
-										nbrTowers * succRate.avg };
+								Object[] result_values_avg = new Object[] { succRate, lossRate, load, T_put,
+										time_stat.avg, time_stat.stdev, runs, ts, tp, radius, nbrTowers, lb, ub,
+										withinGateway, nbrTowers * succRate.avg };
 
 								Object[] result_values_sys = new Object[] { succRate.avg, lossRate.avg, load.avg,
 										T_put.avg, time_stat.avg, runs, ts, tp, radius, nbrTowers, lb, ub,
