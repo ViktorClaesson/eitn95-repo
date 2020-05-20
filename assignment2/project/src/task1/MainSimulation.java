@@ -97,12 +97,13 @@ public class MainSimulation extends Global {
 				.toArray();
 		int[] radiusL = Arrays.asList(prop.getProperty("r", "15").split(", ")).stream().mapToInt(Integer::parseInt)
 				.toArray();
-		int[] nbrTowersL = Arrays.asList(prop.getProperty("n", "2660").split(", ")).stream().mapToInt(Integer::parseInt)
+		int[] nbrTowersL = Arrays.asList(prop.getProperty("n", "2000").split(", ")).stream().mapToInt(Integer::parseInt)
 				.toArray();
 		double[] lbL = Arrays.asList(prop.getProperty("lb", "1").split(", ")).stream().mapToDouble(Double::parseDouble)
 				.toArray();
 		double[] ubL = Arrays.asList(prop.getProperty("ub", "1").split(", ")).stream().mapToDouble(Double::parseDouble)
 				.toArray();
+		boolean smart = Boolean.parseBoolean(prop.getProperty("smart", "false"));
 		int runs = Integer.parseInt(prop.getProperty("runs", "1"));
 
 		new File("src/task1/results/").mkdirs();
@@ -147,8 +148,12 @@ public class MainSimulation extends Global {
 									Signal actSignal;
 									new SignalList();
 
-									// double withinGateway_run = taskAB(ts, tp, radius, nbrTowers);
-									double withinGateway_run = taskCD(ts, tp, radius, nbrTowers, lb, ub);
+									double withinGateway_run;
+									if (!smart) {
+										withinGateway_run = taskAB(ts, tp, radius, nbrTowers);
+									} else {
+										withinGateway_run = taskCD(ts, tp, radius, nbrTowers, lb, ub);
+									}
 									withinGateway += withinGateway_run;
 
 									// RESET GLOBAL VARIABLES
