@@ -39,7 +39,21 @@ public class Task2 {
 		return out;
 	}
 
-	public static void run(int SIZE, int N_STUDENTS, double SPEED, int RUNS) throws IOException {
+	public static void run(String propertiesFilePath) throws IOException {
+		// READ CONFIG
+		Properties prop = new Properties();
+		if (propertiesFilePath != null) {
+			FileInputStream fis = new FileInputStream(propertiesFilePath);
+			prop.load(fis);
+			fis.close();
+		}
+		int minSpeed = Integer.parseInt(prop.getProperty("minSpeed", "1"));
+		int maxSpeed = Integer.parseInt(prop.getProperty("maxSpeed", "1"));
+		int RUNS = Integer.parseInt(prop.getProperty("runs", "1000"));
+		int SIZE = Integer.parseInt(prop.getProperty("size", "20"));
+		int N_STUDENTS = Integer.parseInt(prop.getProperty("n", "20"));
+
+		// OUTPUT FILES
 		new File("src/task2/results").mkdirs();
 		FileWriter fw_freq = new FileWriter("src/task2/results/freq.txt");
 		FileWriter fw_time = new FileWriter("src/task2/results/time.txt");
@@ -62,7 +76,8 @@ public class Task2 {
 
 			// Send init signals
 			List<Student> students = IntStream.range(0, N_STUDENTS)
-					.mapToObj(i -> new Student(i, randomSquare(squares), SPEED * 60)).collect(Collectors.toList());
+					.mapToObj(i -> new Student(i, randomSquare(squares), Global.uniRandom(minSpeed, maxSpeed) * 60))
+					.collect(Collectors.toList());
 
 			students.forEach(student -> {
 				if (!student.isTalking())

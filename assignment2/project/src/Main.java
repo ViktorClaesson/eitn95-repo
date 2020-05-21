@@ -11,7 +11,8 @@ public class Main {
                 String propertiesFilePath = args.length > 1 ? args[1] : null;
                 Task1.run("src/task1/config/" + propertiesFilePath);
             } else if (task.equals("task2")) {
-                Task2.run(20, 20, 2, 1000);
+                String propertiesFilePath = args.length > 1 ? args[1] : null;
+                Task2.run("src/task2/config/" + propertiesFilePath);
             } else {
                 System.out.printf("No such task: %s\n", task);
             }
