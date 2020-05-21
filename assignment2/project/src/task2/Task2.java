@@ -3,10 +3,10 @@ package task2;
 import util.*;
 import util.Signal.Type;
 
-import java.util.List;
-import java.util.function.BiFunction;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.io.*;
+import java.util.*;
+import java.util.function.*;
+import java.util.stream.*;
 
 public class Task2 {
 
@@ -33,38 +33,125 @@ public class Task2 {
 		return n * (n - 1) / 2;
 	}
 
-	public static void run(int SIZE, int N_STUDENTS, double SPEED) {
-		// Reset
-		Global.reset();
-		Data.reset();
+	public static int[] toFrequencyArray(Collection<Integer> data, int max) {
+		int[] out = new int[max];
+		data.stream().forEach(f -> out[f - 1]++);
+		return out;
+	}
 
-		// Init the simulation
-		List<Square> squares = IntStream.range(0, SIZE * SIZE).mapToObj(i -> new Square(i % 20, i / 20))
-				.collect(Collectors.toList());
-		int[] idx = { 0 };
-		squares.forEach(sq -> initNeighbours(SIZE, squares, sq, idx[0] % SIZE, idx[0]++ / SIZE));
+	public static void run(int SIZE, int N_STUDENTS, double SPEED, int RUNS) throws IOException {
+		new File("src/task2/results").mkdirs();
+		FileWriter fw_freq = new FileWriter("src/task2/results/freq.txt");
+		FileWriter fw_time = new FileWriter("src/task2/results/time.txt");
 
-		// Send init signals
-		List<Student> students = IntStream.range(0, N_STUDENTS)
-				.mapToObj(i -> new Student(i, randomSquare(squares), SPEED * 60)).collect(Collectors.toList());
+		int max_tmp = 0;
+		double[] time_runs = new double[RUNS];
+		List<Collection<Integer>> meetings_runs = new ArrayList<>(RUNS);
+		final int RUNS_DIGITS = 1 + (int) Math.log10(RUNS);
 
-		students.forEach(student -> {
-			if (!student.isTalking())
-				Global.SendSignal(Type.AT_MIDDLE, student, 0);
+		for (int r = 0; r < RUNS; r++) {
+			// Reset
+			Global.reset();
+			Data.reset();
+
+			// Init the simulation
+			List<Square> squares = IntStream.range(0, SIZE * SIZE).mapToObj(i -> new Square(i % 20, i / 20))
+					.collect(Collectors.toList());
+			int[] idx = { 0 };
+			squares.forEach(sq -> initNeighbours(SIZE, squares, sq, idx[0] % SIZE, idx[0]++ / SIZE));
+
+			// Send init signals
+			List<Student> students = IntStream.range(0, N_STUDENTS)
+					.mapToObj(i -> new Student(i, randomSquare(squares), SPEED * 60)).collect(Collectors.toList());
+
+			students.forEach(student -> {
+				if (!student.isTalking())
+					Global.SendSignal(Type.AT_MIDDLE, student, 0);
+			});
+
+			// Run simulation
+			int pairs = pairs(N_STUDENTS);
+			Global.advanceWhile(() -> Data.meetings.keySet().size() < pairs);
+
+			// Saving run
+			max_tmp = Math.max(max_tmp, Data.meetings.values().stream().max(Integer::compare).get());
+
+			meetings_runs.add(Data.meetings.values());
+			time_runs[r] = Global.time();
+		}
+
+		// Analysis and Logging output
+		final int MAX = max_tmp;
+
+		int[] sum_array = toFrequencyArray(
+				meetings_runs.stream().map(o -> o.stream()).reduce(Stream::concat).get().collect(Collectors.toList()),
+				MAX);
+
+		final int SUM_MAX_DIGITS = 1 + (int) Math.log10(Arrays.stream(sum_array).max().getAsInt());
+
+		Statistic time_stats = new Statistic(time_runs);
+		fw_time.write(String.format("%8s\t%8s\t%16s\n", "time µ", "time σ", "CI 95%"));
+		fw_time.write(String.format("%8.2f\t%8.2f\t%16s\n", time_stats.avg, time_stats.stdev, time_stats.interval()));
+
+		String header_format_meets = "Meets:%" + (RUNS_DIGITS - 1) + "s\t";
+		String header_format_run = "Run %" + RUNS_DIGITS + "d:\t";
+		String header_format_sum = "Sum:%" + (RUNS_DIGITS + 1) + "s\t";
+		String header_format_freq = "Freq:%" + RUNS_DIGITS + "s\t";
+		String header_format_freq_proc = "Freq %%:%" + (RUNS_DIGITS - 2) + "s\t";
+
+		String result_format = "%" + Math.max(SUM_MAX_DIGITS, 6) + "d\t";
+		String result_freq_format = "%" + Math.max(SUM_MAX_DIGITS, 6) + ".4f\t";
+		String result_freq_proc_format = "%" + Math.max(SUM_MAX_DIGITS, 5) + ".2f%%\t";
+
+		// HEADER;
+		fw_freq.write(String.format(header_format_meets, ""));
+		IntStream.range(0, max_tmp).forEach(i -> {
+			try {
+				fw_freq.write(String.format(result_format, i + 1));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		});
+		fw_freq.write("\n");
 
-		// Run simulation
-		int pairs = pairs(N_STUDENTS);
-		long timestamp_start = System.currentTimeMillis();
-		Global.advanceWhile(() -> Data.meetings.keySet().size() < pairs);
-		long timestamp_end = System.currentTimeMillis();
+		// RUNS;
+		IntStream.range(0, meetings_runs.size()).forEach(i -> {
+			try {
+				fw_freq.write(String.format(header_format_run, i + 1));
+				int[] freqs = toFrequencyArray(meetings_runs.get(i), MAX);
+				for (int f : freqs) {
+					fw_freq.write(String.format(result_format, f));
+				}
+				fw_freq.write("\n");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		});
+		// SUM;
+		fw_freq.write(String.format(header_format_sum, ""));
+		for (int f : sum_array) {
+			fw_freq.write(String.format(result_format, f));
+		}
+		fw_freq.write("\n");
 
-		// Analysis
-		System.out.printf("Total meetings: %d\n", Data.total_meetings);
-		System.out.printf("Total meetings: %d\n", Data.total_meetings);
-		System.out.printf("Total meetings: %d\n", Data.total_meetings);
-		System.out.printf("%.2f\n", Global.time());
+		// FREQ;
+		fw_freq.write(String.format(header_format_freq, ""));
+		int sumOfSumArray = Arrays.stream(sum_array).sum();
+		for (int f : sum_array) {
+			fw_freq.write(String.format(result_freq_format, 1.0 * f / sumOfSumArray));
+		}
+		fw_freq.write("\n");
 
-		System.out.printf("\nThe simulation took %.2f seconds to run.\n", (timestamp_end - timestamp_start) * 1e-3);
+		// FREQ PROCENT;
+		fw_freq.write(String.format(header_format_freq_proc, ""));
+		for (int f : sum_array) {
+			fw_freq.write(String.format(result_freq_proc_format, 100.0 * f / sumOfSumArray));
+		}
+		fw_freq.write("\n");
+
+		// CLOSE FILES;
+
+		fw_freq.close();
+		fw_time.close();
 	}
 }

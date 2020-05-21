@@ -1,7 +1,7 @@
 package util;
 
 public class Statistic {
-    public final double avg, stdev;
+    public final double avg, stdev, ci_high, ci_low;
 
     public Statistic(double[] values) {
         double avg_tmp = 0;
@@ -21,6 +21,12 @@ public class Statistic {
 
         avg = avg_tmp;
         stdev = stdev_tmp;
+        ci_low = avg_tmp - 1.96 * stdev_tmp / Math.sqrt(values.length);
+        ci_high = avg_tmp + 1.96 * stdev_tmp / Math.sqrt(values.length);
+    }
+
+    public String interval() {
+        return String.format(" %6.2f - %6.2f", ci_low, ci_high);
     }
 
     @Override
