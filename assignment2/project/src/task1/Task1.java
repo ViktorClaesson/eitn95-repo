@@ -1,6 +1,6 @@
 package task1;
 
-import sim.*;
+import util.*;
 import java.io.*;
 import java.util.*;
 
@@ -13,32 +13,6 @@ public class Task1 {
 			this.x = x;
 			this.y = y;
 			this.tower = tower;
-		}
-	}
-
-	static class Statistic {
-		double avg, stdev;
-
-		public Statistic(double[] values) {
-			avg = 0;
-			for (double v : values) {
-				avg += v;
-			}
-			avg /= values.length;
-
-			stdev = 0;
-			if (values.length > 1) {
-				for (double v : values) {
-					stdev += Math.pow(v - avg, 2);
-				}
-				stdev /= (values.length - 1);
-				stdev = Math.sqrt(stdev);
-			}
-		}
-
-		@Override
-		public String toString() {
-			return String.format("%8.4f\t%8.4f", avg, stdev);
 		}
 	}
 

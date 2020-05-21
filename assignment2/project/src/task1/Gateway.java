@@ -1,6 +1,6 @@
 package task1;
 
-import sim.*;
+import util.*;
 
 class Gateway extends Proc {
     private int transsions = 0;

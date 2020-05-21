@@ -1,7 +1,7 @@
 package task2;
 
-import sim.*;
-import sim.Signal.Type;
+import util.*;
+import util.Signal.Type;
 
 import java.util.List;
 import java.util.function.BiFunction;
@@ -29,6 +29,10 @@ public class Task2 {
 		square.setNeighbours(neighbours);
 	}
 
+	public static int pairs(int n) {
+		return n * (n - 1) / 2;
+	}
+
 	public static void run(int SIZE, int N_STUDENTS, double SPEED) {
 		// Reset
 		Global.reset();
@@ -42,7 +46,7 @@ public class Task2 {
 
 		// Send init signals
 		List<Student> students = IntStream.range(0, N_STUDENTS)
-				.mapToObj(i -> new Student(randomSquare(squares), SPEED * 60)).collect(Collectors.toList());
+				.mapToObj(i -> new Student(i, randomSquare(squares), SPEED * 60)).collect(Collectors.toList());
 
 		students.forEach(student -> {
 			if (!student.isTalking())
@@ -50,9 +54,17 @@ public class Task2 {
 		});
 
 		// Run simulation
-		Global.advanceWhile(() -> Global.time() < 1000);
+		int pairs = pairs(N_STUDENTS);
+		long timestamp_start = System.currentTimeMillis();
+		Global.advanceWhile(() -> Data.meetings.keySet().size() < pairs);
+		long timestamp_end = System.currentTimeMillis();
 
 		// Analysis
-		System.out.printf("Total meetings: %d\n", Data.meetings);
+		System.out.printf("Total meetings: %d\n", Data.total_meetings);
+		System.out.printf("Total meetings: %d\n", Data.total_meetings);
+		System.out.printf("Total meetings: %d\n", Data.total_meetings);
+		System.out.printf("%.2f\n", Global.time());
+
+		System.out.printf("\nThe simulation took %.2f seconds to run.\n", (timestamp_end - timestamp_start) * 1e-3);
 	}
 }

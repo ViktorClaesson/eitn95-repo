@@ -1,6 +1,6 @@
 package task1;
 
-import sim.*;
+import util.*;
 
 class SimpleSensorTower extends Proc {
     private int ts, tp;

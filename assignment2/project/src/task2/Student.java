@@ -1,7 +1,7 @@
 package task2;
 
-import sim.*;
-import sim.Signal.Type;
+import util.*;
+import util.Signal.Type;
 
 public class Student extends Proc {
 
@@ -11,6 +11,7 @@ public class Student extends Proc {
         N, NE, E, SE, S, SW, W, NW
     }
 
+    private final int ID;
     private Square currentSquare;
     private final double moveStraightTime, moveDiagonallyTime;
     private Direction direction;
@@ -18,7 +19,12 @@ public class Student extends Proc {
     private boolean state = true;
     private boolean isTalking = false;
 
-    public Student(Square startSquare, double movingSpeed) {
+    public static String studentKey(Student s1, Student s2) {
+        return s1.ID < s2.ID ? String.format("(%d, %d)", s1.ID, s2.ID) : String.format("(%d, %d)", s2.ID, s1.ID);
+    }
+
+    public Student(int id, Square startSquare, double movingSpeed) {
+        this.ID = id;
         this.currentSquare = startSquare;
         moveStraightTime = 0.5 / movingSpeed;
         moveDiagonallyTime = diagonalLength / movingSpeed;
@@ -38,7 +44,7 @@ public class Student extends Proc {
         return isTalking;
     }
 
-    public void startTalking() {
+    public void startTalking(Student other) {
         isTalking = true;
         Global.SendSignal(Type.STOP_TALKING, this, 1);
     }

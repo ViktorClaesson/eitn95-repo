@@ -3,8 +3,6 @@ package task2;
 import java.util.ArrayList;
 import java.util.List;
 
-import sim.Global;
-import sim.Signal.Type;
 import task2.Student.Direction;
 
 class Square {
@@ -52,9 +50,9 @@ class Square {
 	}
 
 	public void startTalking(Student s1, Student s2) {
-		Data.meetings++;
-		s1.startTalking();
-		s2.startTalking();
+		Data.recordMeeting(s1, s2);
+		s1.startTalking(s2);
+		s2.startTalking(s1);
 	}
 
 	public String neighboursString() {

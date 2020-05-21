@@ -1,6 +1,6 @@
 package task1;
 
-import sim.*;
+import util.*;
 import java.util.List;
 
 class SmartSensorTower extends Proc {
