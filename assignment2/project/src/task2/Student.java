@@ -15,7 +15,7 @@ public class Student extends Proc {
     private final double moveStraightTime, moveDiagonallyTime;
     private Direction direction;
     private int squaresToMove = 0;
-    private boolean atEdge = true;
+    private boolean state = true;
     private boolean isTalking = false;
 
     public Student(Square startSquare, double movingSpeed) {
@@ -38,12 +38,17 @@ public class Student extends Proc {
         return isTalking;
     }
 
+    public void startTalking() {
+        isTalking = true;
+        Global.SendSignal(Type.STOP_TALKING, this, 1);
+    }
+
     @Override
     public void TreatSignal(Signal x) {
         switch (x.signalType) {
             case AT_MIDDLE:
                 if (!isTalking) {
-                    atEdge = false;
+                    state = false;
                     if (squaresToMove == 0 || currentSquare.next(direction) == null) {
                         pickNewDirection();
                     }
@@ -66,7 +71,7 @@ public class Student extends Proc {
                 break;
             case AT_EDGE:
                 if (!isTalking) {
-                    atEdge = true;
+                    state = true;
                     currentSquare.studentLeave(this);
                     currentSquare = currentSquare.next(direction);
                     currentSquare.studentEnter(this);
@@ -86,13 +91,9 @@ public class Student extends Proc {
                     }
                 }
                 break;
-            case START_TALKING:
-                isTalking = true;
-                Global.SendSignal(Type.STOP_TALKING, this, 1);
-                break;
             case STOP_TALKING:
                 isTalking = false;
-                Global.SendSignal(atEdge ? Type.AT_MIDDLE : Type.AT_EDGE, this, 0);
+                Global.SendSignal(state ? Type.AT_MIDDLE : Type.AT_EDGE, this, 0);
                 break;
             default:
                 TypeNotImplemented();

@@ -53,8 +53,8 @@ class Square {
 
 	public void startTalking(Student s1, Student s2) {
 		Data.meetings++;
-		Global.SendSignal(Type.START_TALKING, s1, 0);
-		Global.SendSignal(Type.START_TALKING, s2, 0);
+		s1.startTalking();
+		s2.startTalking();
 	}
 
 	public String neighboursString() {

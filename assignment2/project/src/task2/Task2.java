@@ -50,9 +50,9 @@ public class Task2 {
 		});
 
 		// Run simulation
-		Global.advanceWhile(() -> Global.time() < 100);
+		Global.advanceWhile(() -> Global.time() < 1000);
 
 		// Analysis
-		System.out.printf("Total meetings: %d", Data.meetings);
+		System.out.printf("Total meetings: %d\n", Data.meetings);
 	}
 }
