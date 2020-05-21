@@ -68,7 +68,7 @@ public class Student extends Proc {
                 if (!isTalking) {
                     atEdge = true;
                     currentSquare.studentLeave(this);
-                    System.out.printf("%s : %s -> ", currentSquare, direction);
+                    System.out.printf("[%.3f]: %s : %s -> ", Global.time(), currentSquare, direction);
                     currentSquare = currentSquare.next(direction);
                     System.out.println(currentSquare);
                     currentSquare.studentEnter(this);

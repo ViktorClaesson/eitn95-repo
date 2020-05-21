@@ -50,7 +50,7 @@ public class Task2 {
 		});
 
 		// Run simulation
-		Global.advanceWhile(() -> Global.time() < 1000);
+		Global.advanceWhile(() -> Global.time() < 100);
 
 		// Analysis
 		System.out.println(Global.time());
