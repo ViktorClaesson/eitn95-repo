@@ -1,6 +1,5 @@
 package task2;
 
-import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 
 import sim.*;
@@ -14,20 +13,20 @@ public class Student extends Proc {
         N, NE, E, SE, S, SW, W, NW
     }
 
-    private BiFunction<Square, Direction, Square> changeSquare;
     private BiPredicate<Square, Direction> isAtWall;
     private Square currentSquare;
     private final double moveStraightTime, moveDiagonallyTime;
     private Direction direction;
     private int squaresToMove = 0;
-    private boolean atEdge = false;
+    private boolean atEdge = true;
     private boolean isTalking = false;
 
-    public Student(Square startSquare, BiFunction<Square, Direction, Square> changeSquare, double movingSpeed) {
+    public Student(Square startSquare, double movingSpeed) {
         this.currentSquare = startSquare;
-        this.changeSquare = changeSquare;
         moveStraightTime = 0.5 / movingSpeed;
         moveDiagonallyTime = diagonalLength / movingSpeed;
+        pickNewDirection();
+        currentSquare.studentEnter(this);
     }
 
     public void pickNewDirection() {
@@ -73,7 +72,7 @@ public class Student extends Proc {
                 if (!isTalking) {
                     atEdge = true;
                     currentSquare.studentLeave(this);
-                    currentSquare = changeSquare.apply(currentSquare, direction);
+                    currentSquare = currentSquare.next(direction);
                     currentSquare.studentEnter(this);
                     switch (direction) {
                         case N:
