@@ -52,6 +52,12 @@ public class Task2 {
 		int RUNS = Integer.parseInt(prop.getProperty("runs", "1000"));
 		int SIZE = Integer.parseInt(prop.getProperty("size", "20"));
 		int N_STUDENTS = Integer.parseInt(prop.getProperty("n", "20"));
+		System.out.println("Running Simulation with ...");
+		System.out.println(String.format("minSpeed = %d", minSpeed));
+		System.out.println(String.format("maxSpeed = %d", maxSpeed));
+		System.out.println(String.format("RUNS = %d", RUNS));
+		System.out.println(String.format("SIZE = %d", SIZE));
+		System.out.println(String.format("N_STUDENTS = %d", N_STUDENTS));
 
 		// OUTPUT FILES
 		new File("src/task2/results").mkdirs();
