@@ -1,4 +1,4 @@
-package sim;
+package util;
 
 import java.util.Random;
 import java.util.function.BooleanSupplier;

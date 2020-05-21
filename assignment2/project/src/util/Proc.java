@@ -1,4 +1,4 @@
-package sim;
+package util;
 
 public abstract class Proc {
 	public abstract void TreatSignal(Signal x);

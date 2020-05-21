@@ -1,4 +1,4 @@
-package sim;
+package util;
 
 public class Signal implements Comparable<Signal> {
 	public enum Type {
