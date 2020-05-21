@@ -31,7 +31,7 @@ public class Global {
 		signalList.add(new Signal(type, dest, time + delay));
 	}
 
-	public static void advanceUntil(BooleanSupplier bs) {
+	public static void advanceWhile(BooleanSupplier bs) {
 		while (bs.getAsBoolean()) {
 			advance();
 		}

@@ -48,9 +48,10 @@ public class Task2 {
 		});
 
 		// Run simulation
-		Global.advanceUntil(() -> Global.time() > 1000);
+		Global.advanceWhile(() -> Global.time() < 1000);
 
 		// Analysis
+		System.out.println(Global.time());
 		System.out.println(Data.meetings);
 	}
 }

@@ -176,7 +176,7 @@ public class Task1 {
 									withinGateway += withinGateway_run;
 
 									// Run simulation
-									Global.advanceUntil(() -> (Data.transmissions < 5000 || Global.time() < ts));
+									Global.advanceWhile(() -> (Data.transmissions < 5000 || Global.time() < ts));
 
 									// Record data
 									time_run[i] = Global.time();
