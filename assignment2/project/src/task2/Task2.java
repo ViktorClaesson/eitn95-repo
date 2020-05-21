@@ -35,7 +35,7 @@ public class Task2 {
 		Data.reset();
 
 		// Init the simulation
-		List<Square> squares = IntStream.range(0, SIZE * SIZE).mapToObj(i -> new Square(i % 20, (i / 20)))
+		List<Square> squares = IntStream.range(0, SIZE * SIZE).mapToObj(i -> new Square(i % 20, i / 20))
 				.collect(Collectors.toList());
 		int[] idx = { 0 };
 		squares.forEach(sq -> initNeighbours(SIZE, squares, sq, idx[0] % SIZE, idx[0]++ / SIZE));
@@ -46,14 +46,13 @@ public class Task2 {
 
 		students.forEach(student -> {
 			if (!student.isTalking())
-				Global.SendSignal(Type.MOVE_TO_EDGE, student, 0);
+				Global.SendSignal(Type.MAKE_MOVE, student, 0);
 		});
 
 		// Run simulation
 		Global.advanceWhile(() -> Global.time() < 100);
 
 		// Analysis
-		System.out.println(Global.time());
-		System.out.println(Data.meetings);
+		System.out.printf("Total meetings: %d", Data.meetings);
 	}
 }

@@ -41,7 +41,7 @@ public class Student extends Proc {
     @Override
     public void TreatSignal(Signal x) {
         switch (x.signalType) {
-            case MOVE_TO_EDGE:
+            case MAKE_MOVE:
                 if (!isTalking) {
                     atEdge = false;
                     if (squaresToMove == 0 || currentSquare.next(direction) == null) {
@@ -52,19 +52,19 @@ public class Student extends Proc {
                         case E:
                         case S:
                         case W:
-                            Global.SendSignal(Type.MOVE_TO_MIDDLE, this, moveStraightTime);
+                            Global.SendSignal(Type.AT_EDGE, this, moveStraightTime);
                             break;
                         case NE:
                         case SE:
                         case SW:
                         case NW:
-                            Global.SendSignal(Type.MOVE_TO_MIDDLE, this, moveDiagonallyTime);
+                            Global.SendSignal(Type.AT_EDGE, this, moveDiagonallyTime);
                             break;
                     }
                     squaresToMove--;
                 }
                 break;
-            case MOVE_TO_MIDDLE:
+            case AT_EDGE:
                 if (!isTalking) {
                     atEdge = true;
                     currentSquare.studentLeave(this);
@@ -77,13 +77,13 @@ public class Student extends Proc {
                         case E:
                         case S:
                         case W:
-                            Global.SendSignal(Type.MOVE_TO_EDGE, this, moveStraightTime);
+                            Global.SendSignal(Type.MAKE_MOVE, this, moveStraightTime);
                             break;
                         case NE:
                         case SE:
                         case SW:
                         case NW:
-                            Global.SendSignal(Type.MOVE_TO_EDGE, this, moveDiagonallyTime);
+                            Global.SendSignal(Type.MAKE_MOVE, this, moveDiagonallyTime);
                             break;
                     }
                 }
@@ -94,7 +94,7 @@ public class Student extends Proc {
                 break;
             case STOP_TALKING:
                 isTalking = false;
-                Global.SendSignal(atEdge ? Type.MOVE_TO_EDGE : Type.MOVE_TO_MIDDLE, this, 0);
+                Global.SendSignal(atEdge ? Type.MAKE_MOVE : Type.AT_EDGE, this, 0);
                 break;
             default:
                 TypeNotImplemented();
