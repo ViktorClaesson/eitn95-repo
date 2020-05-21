@@ -46,7 +46,7 @@ public class Task2 {
 
 		students.forEach(student -> {
 			if (!student.isTalking())
-				Global.SendSignal(Type.MAKE_MOVE, student, 0);
+				Global.SendSignal(Type.AT_MIDDLE, student, 0);
 		});
 
 		// Run simulation

@@ -6,7 +6,7 @@ public class Signal implements Comparable<Signal> {
 		BEGIN_TRANSMISSION, END_TRANSMISSION, CHECK_NETWORK,
 
 		// TASK 2
-		MAKE_MOVE, AT_EDGE, START_TALKING, STOP_TALKING
+		AT_MIDDLE, AT_EDGE, START_TALKING, STOP_TALKING
 	}
 
 	public Type signalType;

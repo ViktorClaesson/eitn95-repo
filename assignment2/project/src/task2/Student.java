@@ -41,7 +41,7 @@ public class Student extends Proc {
     @Override
     public void TreatSignal(Signal x) {
         switch (x.signalType) {
-            case MAKE_MOVE:
+            case AT_MIDDLE:
                 if (!isTalking) {
                     atEdge = false;
                     if (squaresToMove == 0 || currentSquare.next(direction) == null) {
@@ -68,22 +68,20 @@ public class Student extends Proc {
                 if (!isTalking) {
                     atEdge = true;
                     currentSquare.studentLeave(this);
-                    System.out.printf("[%.3f]: %s : %s -> ", Global.time(), currentSquare, direction);
                     currentSquare = currentSquare.next(direction);
-                    System.out.println(currentSquare);
                     currentSquare.studentEnter(this);
                     switch (direction) {
                         case N:
                         case E:
                         case S:
                         case W:
-                            Global.SendSignal(Type.MAKE_MOVE, this, moveStraightTime);
+                            Global.SendSignal(Type.AT_MIDDLE, this, moveStraightTime);
                             break;
                         case NE:
                         case SE:
                         case SW:
                         case NW:
-                            Global.SendSignal(Type.MAKE_MOVE, this, moveDiagonallyTime);
+                            Global.SendSignal(Type.AT_MIDDLE, this, moveDiagonallyTime);
                             break;
                     }
                 }
@@ -94,7 +92,7 @@ public class Student extends Proc {
                 break;
             case STOP_TALKING:
                 isTalking = false;
-                Global.SendSignal(atEdge ? Type.MAKE_MOVE : Type.AT_EDGE, this, 0);
+                Global.SendSignal(atEdge ? Type.AT_MIDDLE : Type.AT_EDGE, this, 0);
                 break;
             default:
                 TypeNotImplemented();
