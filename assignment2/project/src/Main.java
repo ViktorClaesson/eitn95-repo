@@ -8,7 +8,7 @@ public class Main {
             String task = args[0];
             if (task.equals("task1")) {
                 String propertiesFilePath = args.length > 1 ? args[1] : null;
-                Task1.run(propertiesFilePath);
+                Task1.run("src/task1/config/" + propertiesFilePath);
             } else if (task.equals("task2")) {
                 Task2.run();
             } else {
