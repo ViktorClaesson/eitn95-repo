@@ -129,19 +129,18 @@ public class Task1 {
 
 		String header_all = "%8s\t%8s\t%8s\t%8s\t%10s\t%4s\t%6s\t%4s\t%4s\t%6s\t%4s\t%4s\t%8s\t%8s\n";
 		String result_all = "%8.5f\t%8.5f\t%8.5f\t%8.5f\t%10.2f\t%4d\t%6d\t%4d\t%4d\t%6d\t%4.2f\t%4.2f\t%8.5f\t%8.2f\n";
-		Object[] header_values_all = new String[] { "S_rate", "L_rate", "λ", "T_put", "time", "runs", "ts", "tp", "r",
-				"n", "lb", "ub", "%!dead", "n*succ" };
+		Object[] header_values_all = { "S_rate", "L_rate", "λ", "T_put", "time", "runs", "ts", "tp", "r", "n", "lb",
+				"ub", "%!dead", "n*succ" };
 
 		String header_avg = "%8s\t%8s\t%8s\t%8s\t%8s\t%8s\t%8s\t%8s\t%10s\t%10s\t%4s\t%6s\t%4s\t%4s\t%6s\t%4s\t%4s\t%8s\t%8s\n";
 		String result_avg = "%16s\t%16s\t%16s\t%16s\t%10.2f\t%10.4f\t%4d\t%6d\t%4d\t%4d\t%6d\t%4.2f\t%4.2f\t%8.5f\t%8.2f\n";
-		Object[] header_values_avg = new String[] { "S_rate_µ", "S_rate_σ", "L_rate_µ", "L_rate_σ", "λ_µ", "λ_σ",
-				"T_put_µ", "T_put_σ", "time_µ", "time_σ", "runs", "ts", "tp", "r", "n", "lb", "ub", "%!dead_µ",
-				"n*succ" };
+		Object[] header_values_avg = { "S_rate_µ", "S_rate_σ", "L_rate_µ", "L_rate_σ", "λ_µ", "λ_σ", "T_put_µ",
+				"T_put_σ", "time_µ", "time_σ", "runs", "ts", "tp", "r", "n", "lb", "ub", "%!dead_µ", "n*succ" };
 
 		String header_sys = header_all;
 		String result_sys = result_all;
-		Object[] header_values_sys = new String[] { "S_rate_µ", "L_rate_µ", "λ_µ", "T_put_µ", "time_µ", "runs", "ts",
-				"tp", "r", "n", "lb", "ub", "%!dead_µ", "n*succ" };
+		Object[] header_values_sys = { "S_rate_µ", "L_rate_µ", "λ_µ", "T_put_µ", "time_µ", "runs", "ts", "tp", "r", "n",
+				"lb", "ub", "%!dead_µ", "n*succ" };
 
 		fw_all.write(String.format(header_all, header_values_all));
 		fw_avg.write(String.format(header_avg, header_values_avg));
@@ -187,9 +186,9 @@ public class Task1 {
 									T_put_run[i] = Data.successful_transmissions / Global.time();
 
 									// simulation analysis
-									Object[] result_values_all = new Object[] { succRate_run[i], lossRate_run[i],
-											load_run[i], T_put_run[i], time_run[i], runs, ts, tp, radius, nbrTowers, lb,
-											ub, withinGateway_run, nbrTowers * succRate_run[i] };
+									Object[] result_values_all = { succRate_run[i], lossRate_run[i], load_run[i],
+											T_put_run[i], time_run[i], runs, ts, tp, radius, nbrTowers, lb, ub,
+											withinGateway_run, nbrTowers * succRate_run[i] };
 									String output = String.format(result_all, result_values_all);
 									fw_all.write(output);
 								}
@@ -202,13 +201,13 @@ public class Task1 {
 								Statistic load = new Statistic(load_run);
 								Statistic T_put = new Statistic(T_put_run);
 
-								Object[] result_values_avg = new Object[] { succRate, lossRate, load, T_put,
-										time_stat.avg, time_stat.stdev, runs, ts, tp, radius, nbrTowers, lb, ub,
-										withinGateway, nbrTowers * succRate.avg };
+								Object[] result_values_avg = { succRate, lossRate, load, T_put, time_stat.avg,
+										time_stat.stdev, runs, ts, tp, radius, nbrTowers, lb, ub, withinGateway,
+										nbrTowers * succRate.avg };
 
-								Object[] result_values_sys = new Object[] { succRate.avg, lossRate.avg, load.avg,
-										T_put.avg, time_stat.avg, runs, ts, tp, radius, nbrTowers, lb, ub,
-										withinGateway, nbrTowers * succRate.avg };
+								Object[] result_values_sys = { succRate.avg, lossRate.avg, load.avg, T_put.avg,
+										time_stat.avg, runs, ts, tp, radius, nbrTowers, lb, ub, withinGateway,
+										nbrTowers * succRate.avg };
 
 								fw_avg.write(String.format(result_avg, result_values_avg));
 								System.out.printf(result_sys, result_values_sys);
