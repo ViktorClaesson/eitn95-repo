@@ -1,7 +1,5 @@
 package task2;
 
-import java.util.function.BiPredicate;
-
 import sim.*;
 import sim.Signal.Type;
 
@@ -13,7 +11,6 @@ public class Student extends Proc {
         N, NE, E, SE, S, SW, W, NW
     }
 
-    private BiPredicate<Square, Direction> isAtWall;
     private Square currentSquare;
     private final double moveStraightTime, moveDiagonallyTime;
     private Direction direction;
@@ -31,8 +28,10 @@ public class Student extends Proc {
 
     public void pickNewDirection() {
         squaresToMove = (int) Global.uniRandom(0, 10) + 1;
-        int key = (int) Global.uniRandom(0, 8);
-        direction = Direction.values()[key];
+        do {
+            int key = (int) Global.uniRandom(0, 8);
+            direction = Direction.values()[key];
+        } while (currentSquare.next(direction) == null);
     }
 
     public boolean isTalking() {
@@ -45,10 +44,7 @@ public class Student extends Proc {
             case MOVE_TO_EDGE:
                 if (!isTalking) {
                     atEdge = false;
-                    if (isAtWall.test(currentSquare, direction)) {
-                        squaresToMove = 0;
-                    }
-                    if (squaresToMove == 0) {
+                    if (squaresToMove == 0 || currentSquare.next(direction) == null) {
                         pickNewDirection();
                     }
                     switch (direction) {
@@ -72,7 +68,9 @@ public class Student extends Proc {
                 if (!isTalking) {
                     atEdge = true;
                     currentSquare.studentLeave(this);
+                    System.out.printf("%s : %s -> ", currentSquare, direction);
                     currentSquare = currentSquare.next(direction);
+                    System.out.println(currentSquare);
                     currentSquare.studentEnter(this);
                     switch (direction) {
                         case N:

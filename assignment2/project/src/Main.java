@@ -10,7 +10,7 @@ public class Main {
                 String propertiesFilePath = args.length > 1 ? args[1] : null;
                 Task1.run("src/task1/config/" + propertiesFilePath);
             } else if (task.equals("task2")) {
-                Task2.run();
+                Task2.run(20, 20, 2);
             } else {
                 System.out.printf("No such task: %s\n", task);
             }
