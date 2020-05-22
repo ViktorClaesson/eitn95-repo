@@ -49,9 +49,9 @@ public class Task2 {
 		}
 		int minSpeed = Integer.parseInt(prop.getProperty("minSpeed", "2"));
 		int maxSpeed = Integer.parseInt(prop.getProperty("maxSpeed", "2"));
-		int RUNS = Integer.parseInt(prop.getProperty("runs", "1000"));
-		int SIZE = Integer.parseInt(prop.getProperty("size", "20"));
 		int N_STUDENTS = Integer.parseInt(prop.getProperty("n", "20"));
+		int SIZE = Integer.parseInt(prop.getProperty("size", "20"));
+		int RUNS = Integer.parseInt(prop.getProperty("runs", "1000"));
 		System.out.println("Running Simulation with ...");
 		System.out.println(String.format("minSpeed = %d", minSpeed));
 		System.out.println(String.format("maxSpeed = %d", maxSpeed));

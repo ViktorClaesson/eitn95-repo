@@ -90,8 +90,8 @@ public class Task1 {
 				.toArray();
 		double[] ubL = Arrays.asList(prop.getProperty("ub", "1").split(", ")).stream().mapToDouble(Double::parseDouble)
 				.toArray();
-		boolean smart = Boolean.parseBoolean(prop.getProperty("smart", "false"));
 		int runs = Integer.parseInt(prop.getProperty("runs", "1"));
+		boolean smart = Boolean.parseBoolean(prop.getProperty("smart", "false"));
 
 		System.out.printf("Running %d %s simulations...\n",
 				runs * tsL.length * tpL.length * radiusL.length * nbrTowersL.length * sims(lbL, ubL),
