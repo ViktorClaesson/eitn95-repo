@@ -47,8 +47,8 @@ public class Task2 {
 			prop.load(fis);
 			fis.close();
 		}
-		int minSpeed = Integer.parseInt(prop.getProperty("minSpeed", "1"));
-		int maxSpeed = Integer.parseInt(prop.getProperty("maxSpeed", "1"));
+		int minSpeed = Integer.parseInt(prop.getProperty("minSpeed", "2"));
+		int maxSpeed = Integer.parseInt(prop.getProperty("maxSpeed", "2"));
 		int RUNS = Integer.parseInt(prop.getProperty("runs", "1000"));
 		int SIZE = Integer.parseInt(prop.getProperty("size", "20"));
 		int N_STUDENTS = Integer.parseInt(prop.getProperty("n", "20"));
