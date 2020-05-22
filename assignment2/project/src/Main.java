@@ -3,6 +3,13 @@ import task1.Task1;
 import task2.Task2;
 
 public class Main {
+
+    /***
+     * Main function. When running the program from terminal make sure to add
+     * 
+     * @param args
+     * @throws IOException
+     */
     public static void main(String[] args) throws IOException {
         long timestamp_start = System.currentTimeMillis();
         if (args.length > 0) {

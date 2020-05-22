@@ -82,7 +82,7 @@ public class Task1 {
 				.toArray();
 		int[] tpL = Arrays.asList(prop.getProperty("tp", "1").split(", ")).stream().mapToInt(Integer::parseInt)
 				.toArray();
-		int[] radiusL = Arrays.asList(prop.getProperty("r", "15").split(", ")).stream().mapToInt(Integer::parseInt)
+		int[] radiusL = Arrays.asList(prop.getProperty("r", "7").split(", ")).stream().mapToInt(Integer::parseInt)
 				.toArray();
 		int[] nbrTowersL = Arrays.asList(prop.getProperty("n", "2000").split(", ")).stream().mapToInt(Integer::parseInt)
 				.toArray();
